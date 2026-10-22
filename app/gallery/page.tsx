@@ -1,0 +1,62 @@
+import type { Metadata } from 'next'
+import React from 'react'
+import VideoTab from './_components/video-tabs'
+import GalleryCard from './_components/gallery-card'
+import Hero from '../_components/hero'
+import GsapReveal from '@/components/ui/gsap-reveal'
+
+export const metadata: Metadata = {
+  title: 'Gallery',
+  description:
+    "Explore Compulink's gallery of projects, events, and technological innovations. Photos and videos from our 30+ year journey.",
+}
+
+function Gallery() {
+  return (
+    <div>
+      <Hero
+        backImage="hardware.jpg"
+        image=""
+        title="Our Gallery"
+        subtitle="Explore Our Work, Events, and Innovations"
+      />
+      <div className="container mx-auto px-4 py-16">
+        <GsapReveal
+          className="text-center mb-16"
+        >
+          <h1 className="text-lg md:text-4xl font-bold text-gray-800 mb-6">
+            Compulink <span className="text-blue-600">Gallery</span>
+          </h1>
+          <p className="text-md md:text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover our journey through photos and videos showcasing our projects, events, and
+            technological innovations over the past 30 years.
+          </p>
+        </GsapReveal>
+
+        {/* Video Section */}
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">Event Videos</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-md md:text-lg">
+              Watch highlights from our major events and exhibitions
+            </p>
+          </div>
+          <VideoTab />
+        </div>
+
+        {/* Photo Gallery */}
+        <div>
+          <div className="text-center mb-12">
+            <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">Photo Gallery</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-md md:text-lg">
+              Browse through our collection of project photos and event moments
+            </p>
+          </div>
+          <GalleryCard />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Gallery
