@@ -2,7 +2,15 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Play, Calendar, Tag } from 'lucide-react'
 
-function VideoCard({ title, desc, video, category }: any) {
+interface VideoCardProps {
+  title: string
+  desc?: string
+  video: string
+  category?: string
+  poster?: string
+}
+
+function VideoCard({ title, desc, video, category, poster }: VideoCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -12,7 +20,7 @@ function VideoCard({ title, desc, video, category }: any) {
               className="w-full h-full object-cover"
               src={video}
               controls={true}
-              poster="/images/video-poster.jpg"
+              poster={poster ?? '/images/class1.jpg'}
             >
               Your browser does not support the video tag.
             </video>

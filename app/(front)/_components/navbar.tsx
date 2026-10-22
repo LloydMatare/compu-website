@@ -1,262 +1,314 @@
 'use client'
-import { Menu, X, Phone, Mail, ArrowRight } from 'lucide-react'
+
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState, useEffect, useRef } from 'react'
-import { Button } from '@/components/ui/button'
 import { usePathname } from 'next/navigation'
-import gsap from 'gsap'
+import { useTheme } from 'next-themes'
+import {
+  ArrowRight,
+  ArrowUpRight,
+  LayoutDashboard,
+  Mail,
+  Menu,
+  Moon,
+  Phone,
+  Sun,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
+import { MobileNavSheet } from './mobileNavSheet'
+import { NAV_LINKS, type NavLink } from '@/lib/Navigation'
+import { CONTACT, SITE_NAME } from '@/lib/constants/site'
+import { cn } from '@/lib/utils'
+
+const socialLinks = [
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/search/top/?q=compulink%20holdings',
+    path: 'M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14C17.17 2.1 16.03 2 14.8 2 12.1 2 10.2 3.66 10.2 6.7v2.8H7v4h3.2V22h3.8v-8.5Z',
+  },
+  {
+    name: 'X',
+    href: 'https://x.com/compulinkzw',
+    path: 'M17.53 3h3.02l-6.6 7.54L21.75 21h-6.06l-4.75-6.21L5.5 21H2.47l7.06-8.07L2.25 3h6.21l4.29 5.67L17.53 3Zm-1.06 16.2h1.67L7.6 4.7H5.8l10.67 14.5Z',
+  },
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/compulink_zw/',
+    path: 'M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.8.22 2.43.46.66.26 1.22.6 1.77 1.16.56.55.9 1.11 1.16 1.77.24.63.41 1.36.46 2.43C21.99 8.94 22 9.28 22 12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.8-.46 2.43a4.9 4.9 0 0 1-1.16 1.77 4.9 4.9 0 0 1-1.77 1.16c-.63.24-1.36.41-2.43.46-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.8-.22-2.43-.46a4.9 4.9 0 0 1-1.77-1.16 4.9 4.9 0 0 1-.16-1.77C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.8.46-2.43a4.9 4.9 0 0 1 1.16-1.77A4.9 4.9 0 0 1 5.45 2.52c.63-.24 1.36-.41 2.43-.46C8.94 2.01 9.28 2 12 2Zm0 3.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4Zm0 2.2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm6.4-2.6a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z',
+  },
+]
+
+type NavEntry = NavLink & { external?: boolean }
+
+const CONTACT_PHONE = '+263 242 494 407'
+
+const serviceDescriptions: Record<string, string> = {
+  'Cloud Computing': 'Tier 3 data centre, migration and managed cloud',
+  Networking: 'Design, build and maintain network infrastructure',
+  'Software Development': 'Custom apps, AI and workflow automation',
+  'Cyber Security': 'Assessment, monitoring and threat response',
+  'Hardware Solutions': 'Certified hardware supply, imaging and maintenance',
+  'IT Consulting': 'Strategy, roadmaps and technology advisory',
+  'Technical Support': 'Monitoring, maintenance and SLA-backed support',
+}
+
+const navItems: NavEntry[] = [
+  ...NAV_LINKS.filter((link) => link.name !== 'Home' && link.name !== 'Contact').map(
+    (link) => ({ ...link })
+  ),
+  { name: 'Shop', href: 'https://compulink.odoo.com/shop', external: true },
+  { name: 'Dashboard', href: '/dashboard' },
+]
+
+const emptySubscribe = () => () => {}
+
+/** `true` once the component has hydrated on the client. */
+function useIsHydrated() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
+}
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const hydrated = useIsHydrated()
+
+  const isDark = hydrated && resolvedTheme === 'dark'
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      className="rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
+  )
+}
 
 function Navbar() {
-  const links = [
-    { name: 'Home', link: '/' },
-    { name: 'Portfolio', link: '/portfolio' },
-    { name: 'Services', link: '/services' },
-    { name: 'Events', link: '/events' },
-    { name: 'Gallery', link: '/gallery' },
-    { name: 'Blog', link: '/blog' },
-    { name: 'Vacancies', link: '/vacancy' },
-    { name: 'Catalog', link: '/catalog' },
-    { name: 'Shop', link: 'https://compulink.odoo.com/shop' },
-  ]
-
-  const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const logoRef = useRef<HTMLDivElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
-  const mobileRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileNav, setMobileNav] = useState({ open: false, path: pathname })
+  const [lastPath, setLastPath] = useState(pathname)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
+    const handleScroll = () => setScrolled(window.scrollY > 24)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Mobile menu open/close animation
-  useEffect(() => {
-    const el = mobileRef.current
-    if (!el) return
-
-    if (open) {
-      gsap.fromTo(
-        el,
-        { height: 0, autoAlpha: 0 },
-        { height: 'auto', autoAlpha: 1, duration: 0.35, ease: 'power3.out' }
-      )
-      gsap.fromTo(
-        el.querySelectorAll('[data-menu-item]'),
-        { y: -16, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.35, ease: 'power3.out', stagger: 0.06, delay: 0.1 }
-      )
-    } else {
-      gsap.to(el, { height: 0, autoAlpha: 0, duration: 0.3, ease: 'power2.in' })
-    }
-  }, [open])
-
-  // Check if link is active
-  const isActive = (linkPath: string) => {
-    if (linkPath === '/') {
-      return pathname === '/'
-    }
-    return pathname.startsWith(linkPath)
+  // The drawer closes itself whenever the route changes.
+  if (lastPath !== pathname) {
+    setLastPath(pathname)
+    setMobileNav({ open: false, path: pathname })
   }
 
-  const handleHover = (e: React.MouseEvent<HTMLElement>, scale: number, rotate = 0) => {
-    gsap.to(e.currentTarget, { scale, rotate, duration: 0.3, ease: 'power2.out' })
-  }
+  const mobileOpen = mobileNav.open && mobileNav.path === pathname
+
+  const setMobileOpen = useCallback(
+    (nextOpen: boolean) => setMobileNav({ open: nextOpen, path: pathname }),
+    [pathname]
+  )
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
-    <>
-      {/* Top Bar - Modern Gradient */}
-      <div className="hidden md:block bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-2.5 px-4 text-xs border-b border-slate-700/30">
-        <div className="container mx-auto flex justify-between items-center">
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* Utility bar */}
+      <div
+        className={cn(
+          'overflow-hidden border-b border-border/40 bg-surface/60 backdrop-blur-xl transition-[max-height,opacity] duration-300 ease-out-expo',
+          scrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        )}
+      >
+        <div className="container mx-auto hidden h-10 items-center justify-between px-4 text-xs text-muted-foreground md:flex">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 hover:text-blue-400 transition-colors cursor-pointer">
-              <Phone size={13} className="text-blue-500" />
-              <span>+263 242 494 407</span>
-            </div>
-            <div className="flex items-center gap-2 hover:text-blue-400 transition-colors cursor-pointer">
-              <Mail size={13} className="text-blue-500" />
-              <span>info@compulink.co.zw</span>
-            </div>
+            <a
+              href={`tel:${CONTACT_PHONE.replace(/\s/g, '')}`}
+              className="flex items-center gap-2 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Phone className="h-3.5 w-3.5 text-brand" />
+              {CONTACT_PHONE}
+            </a>
+            <a
+              href={`mailto:${CONTACT.email}`}
+              className="flex items-center gap-2 transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Mail className="h-3.5 w-3.5 text-brand" />
+              {CONTACT.email}
+            </a>
           </div>
-          <div className="flex items-center gap-5">
-            <a
-              href="https://www.facebook.com/search/top/?q=compulink%20holdings"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-400 transition-colors hover:scale-110 transform duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </a>
-            <a
-              href="https://x.com/compulinkzw"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-400 transition-colors hover:scale-110 transform duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-              </svg>
-            </a>
-            <a
-              href="https://www.instagram.com/compulink_zw/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-400 transition-colors hover:scale-110 transform duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-              </svg>
-            </a>
+
+          <div className="flex items-center gap-4">
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+                className="rounded-md p-1 text-muted-foreground transition-all hover:-translate-y-0.5 hover:text-brand focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+                  <path d={social.path} />
+                </svg>
+              </a>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Main Navbar - Modern Glass Effect */}
+      {/* Main navigation */}
       <nav
-        className={`w-full fixed left-0 z-50 transition-all duration-300 ${
-          scrolled ? 'top-0' : 'top-0 md:top-10'
-        } ${
+        aria-label="Main navigation"
+        className={cn(
+          'border-b transition-all duration-300 ease-out-expo',
           scrolled
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg border-b border-white/20'
-            : 'bg-white/50 md:bg-transparent md:backdrop-blur-none backdrop-blur-sm'
-        }`}
+            ? 'border-border/60 bg-background/85 shadow-lg backdrop-blur-xl'
+            : 'border-transparent bg-background/40 backdrop-blur-md'
+        )}
       >
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3 md:py-4">
-            {/* Logo with Hover Effect */}
-            <div
-              ref={logoRef}
-              onMouseEnter={(e) => handleHover(e, 1.05)}
-              onMouseLeave={(e) => handleHover(e, 1)}
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between gap-4">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="shrink-0 rounded-lg focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`${SITE_NAME} home`}
             >
-              <Link href="/" className="inline-block">
-                <Image
-                  src={'/images/logo.png'}
-                  alt="Compulink"
-                  height={60}
-                  width={180}
-                  className="h-8 md:h-12 w-auto"
-                  priority
-                />
-              </Link>
-            </div>
+              <Image
+                src="/images/logo.png"
+                alt={SITE_NAME}
+                width={180}
+                height={60}
+                className="h-9 w-auto md:h-10"
+                priority
+              />
+            </Link>
 
-            {/* Desktop Navigation */}
-            <ul className="hidden lg:flex items-center gap-1">
-              {links.map((link) => {
-                const active = isActive(link.link)
-                return (
-                  <li key={link.name}>
-                    <Link
-                      href={link.link}
-                      className="relative px-3.5 py-2 text-sm font-medium transition-all duration-300 group"
-                    >
-                      <span
-                        className={`relative transition-colors duration-300 ${
-                          scrolled
-                            ? active
-                              ? 'text-blue-600'
-                              : 'text-gray-700 group-hover:text-blue-600'
-                            : active
-                              ? 'text-white'
-                              : 'text-white/90 group-hover:text-white'
-                        }`}
+            {/* Desktop navigation */}
+            <NavigationMenu
+              className="hidden xl:flex"
+              viewport={false}
+              delayDuration={120}
+              skipDelayDuration={300}
+            >
+              <NavigationMenuList>
+                {navItems.map((item) =>
+                  item.subLinks ? (
+                    <NavigationMenuItem key={item.href}>
+                      <NavigationMenuTrigger
+                        className={cn(
+                          'px-3 text-[13px] font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+                          isActive(item.href) ? 'text-brand' : 'text-muted-foreground'
+                        )}
                       >
-                        {link.name}
-                        <span
-                          className={`absolute -bottom-1.5 left-0 h-0.5 w-full rounded-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
-                            active ? 'scale-x-100' : 'scale-x-0'
-                          } ${scrolled ? 'bg-blue-600' : 'bg-blue-400'}`}
-                        />
-                      </span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
+                        {item.name}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[540px] gap-1 p-3">
+                          {item.subLinks.map((subLink) => (
+                            <li key={subLink.href}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={subLink.href}
+                                  className={cn(
+                                    'flex-col items-start gap-0.5 rounded-xl px-3 py-2.5 transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                                    isActive(subLink.href)
+                                      ? 'bg-brand/10 text-brand'
+                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                  )}
+                                >
+                                  <span className="text-sm font-medium">{subLink.name}</span>
+                                  <span className="text-xs text-muted-foreground/80">
+                                    {serviceDescriptions[subLink.name] ?? `Compulink ${subLink.name}`}
+                                  </span>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ) : (
+                    <NavigationMenuItem key={item.href}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href={item.href}
+                          target={item.external ? '_blank' : undefined}
+                          rel={item.external ? 'noopener noreferrer' : undefined}
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            'gap-1.5 px-3 text-[13px] font-medium transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+                            isActive(item.href) ? 'text-brand' : 'text-muted-foreground'
+                          )}
+                        >
+                          {item.name === 'Dashboard' && (
+                            <LayoutDashboard className="h-3.5 w-3.5" aria-hidden="true" />
+                          )}
+                          {item.name}
+                          {item.external && (
+                            <ArrowUpRight className="h-3 w-3 opacity-70" aria-hidden="true" />
+                          )}
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  )
+                )}
+              </NavigationMenuList>
+            </NavigationMenu>
 
-            {/* CTA Button */}
-            <div className="hidden lg:block" ref={ctaRef}>
+            {/* Actions */}
+            <div className="flex shrink-0 items-center gap-2">
+              <ThemeToggle />
+
               <Button
                 asChild
-                onMouseEnter={(e) => handleHover(e, 1.05)}
-                onMouseLeave={(e) => handleHover(e, 1)}
-                className={`rounded-full font-semibold transition-all duration-300 flex items-center gap-2 ${
-                  scrolled
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30'
-                    : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/30'
-                }`}
+                className="hidden rounded-full px-4 text-sm font-semibold shadow-[0_0_40px_-12px_var(--glow)] sm:inline-flex"
               >
                 <Link href="/contact">
                   Contact Us
-                  <ArrowRight size={16} />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-            </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              ref={buttonRef}
-              onClick={() => setOpen(!open)}
-              className={`lg:hidden p-2 rounded-lg transition-colors ${
-                scrolled
-                  ? 'text-gray-700 hover:bg-gray-100'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-              aria-label="Toggle menu"
-            >
-              {open ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
+              <MobileNavSheet
+                open={mobileOpen}
+                onOpenChange={setMobileOpen}
+                showTrigger={false}
+              />
 
-        {/* Mobile Menu */}
-        <div
-          className="lg:hidden bg-white/95 backdrop-blur-md border-t border-white/20 overflow-hidden"
-          ref={mobileRef}
-          style={{ height: 0, opacity: 0, visibility: 'hidden' }}
-        >
-          <div className="container mx-auto px-4 py-4">
-            <ul className="space-y-2">
-              {links.map((link) => {
-                const active = isActive(link.link)
-                return (
-                  <li key={link.name} data-menu-item>
-                    <Link
-                      href={link.link}
-                      onClick={() => setOpen(false)}
-                      className={`block px-4 py-3 rounded-lg transition-all font-medium ${
-                        active
-                          ? 'text-blue-600 bg-blue-50 border-l-4 border-blue-600'
-                          : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                      }`}
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-            <div className="mt-4 pt-4 border-t" data-menu-item>
-              <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
-                <Link href="/contact" onClick={() => setOpen(false)}>
-                  Contact Us
-                </Link>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setMobileOpen(true)}
+                aria-label="Open navigation menu"
+                className="rounded-full border-border/60 bg-card/50 xl:hidden"
+              >
+                <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
         </div>
       </nav>
-    </>
+    </header>
   )
 }
 

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import ContactMap from './_components/contactMap'
-import emailjs from 'emailjs-com'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -42,6 +43,7 @@ function Contact() {
 
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
+  const submitMessage = useMutation(api.inbox.submitMessage)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -51,36 +53,36 @@ function Contact() {
     }))
   }
 
-  const sendEmail = (e: React.FormEvent) => {
+  const sendEmail = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
-    emailjs
-      .send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        formData,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!,
-      )
-      .then(
-        (result: any) => {
-          if (isPostHogConfigured) {
-            posthog.capture('contact_form_submitted')
-          }
-          toast.success('Message sent successfully!', {
-            description: 'We will get back to you within 24 hours.',
-          })
-          setFormData({ name: '', email: '', message: '', phone: '', company: '', subject: '' })
-          setLoading(false)
-        },
-        (error: any) => {
-          toast.error('Failed to send message', {
-            description: 'Please try again or contact us directly.',
-          })
-          console.log('Error sending message ', error)
-          setLoading(false)
-        },
-      )
+    try {
+      await submitMessage({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        phone: formData.phone || undefined,
+        subject:
+          formData.subject ||
+          (formData.company ? `Company: ${formData.company}` : undefined),
+      })
+
+      if (isPostHogConfigured) {
+        posthog.capture('contact_form_submitted')
+      }
+      toast.success('Message sent successfully!', {
+        description: 'We will get back to you within 24 hours.',
+      })
+      setFormData({ name: '', email: '', message: '', phone: '', company: '', subject: '' })
+    } catch (error) {
+      toast.error('Failed to send message', {
+        description: 'Please try again or contact us directly.',
+      })
+      console.error('Error sending message', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

@@ -15,6 +15,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Upload, Send, Loader2, CheckCircle } from 'lucide-react'
 import posthog from 'posthog-js'
+import { useAction, useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import type { Id } from '@/convex/_generated/dataModel'
 
 const isPostHogConfigured = Boolean(
   process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -40,6 +43,8 @@ export function VacancyApplyModal({ vacancy, isOpen, onClose }: VacancyApplyModa
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const generateUploadUrl = useAction(api.media.generateUploadUrl)
+  const applyForVacancy = useMutation(api.vacancies.apply)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -80,43 +85,48 @@ export function VacancyApplyModal({ vacancy, isOpen, onClose }: VacancyApplyModa
     setIsSubmitting(true)
 
     try {
-      // Create FormData for file upload
-      const formDataToSend = new FormData()
-      formDataToSend.append('vacancyId', vacancy._id)
-      formDataToSend.append('position', vacancy.position)
-      formDataToSend.append('fullName', formData.fullName)
-      formDataToSend.append('email', formData.email)
-      formDataToSend.append('phone', formData.phone)
-      formDataToSend.append('coverLetter', formData.coverLetter)
+      let cvStorageId: string | undefined
+      let cvFileName: string | undefined
+
       if (formData.resume) {
-        formDataToSend.append('resume', formData.resume)
+        const uploadUrl = await generateUploadUrl({})
+        const upload = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': formData.resume.type || 'application/octet-stream' },
+          body: formData.resume,
+        })
+        if (!upload.ok) throw new Error('Resume upload failed')
+        const { storageId } = (await upload.json()) as { storageId: string }
+        cvStorageId = storageId
+        cvFileName = formData.resume.name
       }
 
-      // Replace with your API endpoint
-      const response = await fetch('/api/vacancies/apply', {
-        method: 'POST',
-        body: formDataToSend,
+      await applyForVacancy({
+        vacancyId: vacancy._id as Id<'vacancies'>,
+        position: vacancy.position,
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        coverLetter: formData.coverLetter || undefined,
+        cvStorageId,
+        cvFileName,
       })
 
-      if (response.ok) {
-        if (isPostHogConfigured) {
-          posthog.capture('job_application_submitted')
-        }
-        setIsSubmitted(true)
-        setTimeout(() => {
-          setIsSubmitted(false)
-          onClose()
-          setFormData({
-            fullName: '',
-            email: '',
-            phone: '',
-            coverLetter: '',
-            resume: null,
-          })
-        }, 2000)
-      } else {
-        throw new Error('Submission failed')
+      if (isPostHogConfigured) {
+        posthog.capture('job_application_submitted')
       }
+      setIsSubmitted(true)
+      setTimeout(() => {
+        setIsSubmitted(false)
+        onClose()
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          coverLetter: '',
+          resume: null,
+        })
+      }, 2000)
     } catch (error) {
       console.error('Error submitting application:', error)
       setErrors({ submit: 'Failed to submit application. Please try again.' })

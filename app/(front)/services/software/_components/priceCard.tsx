@@ -1,58 +1,51 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import Image from 'next/image'
+import { CircleCheck } from 'lucide-react'
 import React from 'react'
 import { PriceModal } from './priceModal'
 
-// const lists = [
-//     {
-//         id: 1,
-//         title: "Details"
-//     },
-//     {
-//         id: 2,
-//         title: "Details 2"
-//     },
-//     {
-//         id: 3,
-//         title: "Details 3"
-//     },
-//     {
-//         id: 4,
-//         title: "Details 4"
-//     }
-// ]
+export interface PriceListItem {
+  id: number
+  title: string
+}
 
+export interface PriceCardProps {
+  title: string
+  subtitle: string
+  price: string
+  lists?: PriceListItem[]
+}
 
-function PriceCard({ title, subtitle, price, lists }: any) {
-    return (
-        <div className=''>
-            <Card>
-                <CardHeader className='font-bold text-lg'>{title}</CardHeader>
-                <CardContent>
-                    <div className=" text-slate-500">{subtitle}</div>
-                    <div className="pt-4 text-slate-800 font-bold">{`$${price}`}</div>
-                    <PriceModal title={title} />
-                    <Separator className='mt-4' />
-                    <div className="mt-4">
-                        <ul className="list-disc px-4">
-                            {
-                                lists?.map((list: any) => (
-                                    <li
-                                        style={{ listStyle: "initial" }}
-                                        key={list.id}
-                                        className="mb-1 text-slate-600">
-                                        {list.title}
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </div>
-                </CardContent>
-            </Card>
+function PriceCard({ title, subtitle, price, lists }: PriceCardProps) {
+  return (
+    <Card className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/50 backdrop-blur-xl transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_0_40px_-12px_var(--glow)]">
+      <CardHeader>
+        <CardTitle className="font-display text-base font-bold text-foreground">{title}</CardTitle>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">{subtitle}</p>
+      </CardHeader>
+
+      <CardContent className="flex flex-1 flex-col">
+        <p className="font-display text-3xl font-bold text-gradient-brand">
+          {price === 'N/A' ? price : `$${price}`}
+        </p>
+
+        <Separator className="my-5" />
+
+        <ul className="flex-grow space-y-2.5">
+          {lists?.map((list) => (
+            <li key={list.id} className="flex items-center gap-2.5 text-sm text-foreground/90">
+              <CircleCheck className="h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
+              {list.title}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-6">
+          <PriceModal title={title} />
         </div>
-    )
+      </CardContent>
+    </Card>
+  )
 }
 
 export default PriceCard

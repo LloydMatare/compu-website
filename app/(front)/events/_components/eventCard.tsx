@@ -1,175 +1,114 @@
-import LinkButton from '@/components/link-button'
-import getEvents from '@/lib/events/getEvents'
-import { MapPin, Calendar, Clock, Users, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowUpRight, Calendar, Clock, MapPin } from 'lucide-react'
+import getEvents from '@/lib/events/getEvents'
 import { Badge } from '@/components/ui/badge'
 import { EventModal } from './eventModal'
-import { Button } from '@/components/ui/button'
 
 async function EventCard() {
   const events = await getEvents()
+  const event = events[0]
 
-  // Handle no events case
-  if (!events || events.length === 0) {
+  if (!event) {
     return (
-      <div className="bg-gradient-to-br from-gray-50 to-white -translate-y-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200 font-semibold">
-              Featured Event
-            </Badge>
-            <h1 className="text-lg md:text-5xl font-bold text-gray-900 mb-4">Upcoming Events</h1>
-            <p className="text-md md:text-xl text-gray-600 max-w-2xl mx-auto">
-              {` Don't miss out on our latest gatherings and experiences`}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200 p-12">
-            <div className="flex flex-col items-center justify-center text-center py-16">
-              <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-blue-100 mb-6">
-                <Calendar className="h-10 w-10 text-blue-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">No Featured Event Available</h2>
-              <p className="text-gray-600 mb-6 max-w-md">
-                {` We're currently planning our next big event. Stay tuned for announcements and
-                updates on upcoming gatherings!`}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl">
-                  Subscribe for Updates
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
-                >
-                  View Past Events
-                </Button>
-              </div>
-            </div>
-          </div>
+      <div className="container mx-auto px-4 py-16">
+        <div className="rounded-3xl border border-dashed border-border/60 py-20 text-center">
+          <h2 className="text-lg font-semibold md:text-2xl">No featured event available</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+            We are currently planning our next event. Stay tuned for announcements and updates.
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <>
-      {events?.slice(0, 1).map((event: any, index: any) => (
-        <div key={index} className="bg-gradient-to-br from-gray-50 to-white -translate-y-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-            <div className="text-center mb-12">
-              <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200 font-semibold">
-                Featured Event
-              </Badge>
-              <h1 className="text-lg md:text-5xl font-bold text-gray-900 mb-4">Upcoming Events</h1>
-              <p className="text-md md:text-xl text-gray-600 max-w-2xl mx-auto">
-                {` Don't miss out on our latest gatherings and experiences`}
-              </p>
+    <section className="container mx-auto px-4 py-16">
+      <div className="mb-10 text-center">
+        <Badge className="mb-4 bg-brand/10 text-brand">Featured event</Badge>
+        <h2 className="text-2xl font-bold md:text-4xl">Upcoming events</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
+          Do not miss out on our latest gatherings, workshops and experiences.
+        </p>
+      </div>
+
+      <article className="overflow-hidden rounded-3xl border border-border/60 bg-card/50">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="relative min-h-[320px] bg-muted lg:min-h-[500px]">
+            {event.imageUrl ? (
+              <Image
+                src={event.imageUrl}
+                fill
+                alt={event.title}
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            ) : (
+              <Image
+                src="/images/event.png"
+                fill
+                alt={event.title}
+                className="object-contain p-10"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            )}
+            <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-border/60 bg-background/80 p-5 backdrop-blur">
+              <p className="text-xs uppercase tracking-widest text-brand">Featured</p>
+              <h3 className="mt-1 text-xl font-semibold md:text-2xl">{event.title}</h3>
             </div>
+          </div>
 
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                {/* Image Section */}
-                <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100">
-                  <div className="relative h-full min-h-[500px] flex items-center justify-center p-8">
-                    <Image
-                      className="rounded-2xl shadow-lg"
-                      src="/images/event.png"
-                      width={600}
-                      height={600}
-                      alt={event.title}
-                      priority
-                    />
-                    <div className="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-                      <h2 className="text-lg md:text-3xl font-bold text-gray-900 leading-tight">
-                        {event.title}
-                      </h2>
-                      <div className="flex items-center gap-2 mt-3">
-                        <Badge variant="secondary" className="bg-blue-500 text-white">
-                          Limited Seats
-                        </Badge>
-                        <span className="text-sm text-gray-500">• Register Now</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <div className="flex flex-col justify-center p-8 lg:p-12">
+            <h2 className="text-2xl font-bold leading-tight md:text-3xl">{event.title}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-base">
+              {event.description}
+            </p>
 
-                {/* Content Section */}
-                <div className="p-8 lg:p-12">
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-lg md:text-4xl font-bold text-gray-900 leading-tight">
-                        {event.title}
-                      </h1>
-                      <p className="text-gray-600  text-md md:text-lg leading-relaxed mt-4">
-                        {event.description}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-2xl p-6">
-                      <h3 className="font-bold text-md md:text-xl text-gray-900 mb-4">
-                        Event Details
-                      </h3>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-3 flex-1">
-                            <MapPin className="w-5 h-5 text-blue-500" />
-                            <div>
-                              <p className="font-semibold text-gray-900 text-xs md:text-md">
-                                Location
-                              </p>
-                              <p className="text-gray-600 text-xs md:text-md">{event.venue}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-3 flex-1">
-                            <Calendar className="w-5 h-5 text-blue-500" />
-                            <div>
-                              <p className="font-semibold text-gray-900 text-xs md:text-md">Date</p>
-                              <p className="text-gray-600 text-xs md:text-md">{event.date}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {event.time && (
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-3 flex-1">
-                              <Clock className="w-5 h-5 text-blue-500" />
-                              <div>
-                                <p className="font-semibold text-gray-900">Time</p>
-                                <p className="text-gray-600">{event.time}</p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                      <EventModal />
-                      <LinkButton
-                        name="View Full Details"
-                        link="/"
-                        className="flex-1 w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 group/btn"
-                      >
-                        View Full Details
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </LinkButton>
-                    </div>
-                  </div>
-                </div>
+            <dl className="mt-8 grid gap-4 rounded-2xl border border-border/60 bg-background/40 p-6 sm:grid-cols-3">
+              <div>
+                <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 text-brand" />
+                  Venue
+                </dt>
+                <dd className="text-sm">{event.venue ?? 'To be announced'}</dd>
               </div>
+              <div>
+                <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5 text-brand" />
+                  Date
+                </dt>
+                <dd className="text-sm">{event.date ?? 'To be announced'}</dd>
+              </div>
+              <div>
+                <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5 text-brand" />
+                  Time
+                </dt>
+                <dd className="text-sm">{event.time ?? 'To be announced'}</dd>
+              </div>
+            </dl>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <EventModal eventTitle={event.title} />
+              {event.link ? (
+                <Link
+                  href={event.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border/60 px-4 py-2 text-sm font-medium transition-colors hover:border-brand/50 hover:text-brand"
+                >
+                  View full details
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>
-      ))}
-    </>
+      </article>
+    </section>
   )
 }
 
 export default EventCard
-
-export const dynamic = 'force-dynamic'

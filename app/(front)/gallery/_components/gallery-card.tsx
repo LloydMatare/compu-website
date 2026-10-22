@@ -1,208 +1,146 @@
 'use client'
-import React, { useLayoutEffect, useRef, useState } from 'react'
+
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Filter, X } from 'lucide-react'
-import gsap from 'gsap'
+import { Skeleton } from '@/components/ui/skeleton'
+import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-const galleryImages = [
-  {
-    id: 1,
-    src: '/images/AI.jpg',
-    alt: 'AI Solutions',
-    title: 'AI Development',
-    category: 'Software',
-    description: 'Our artificial intelligence solutions transforming business operations',
-  },
-  {
-    id: 2,
-    src: '/images/hardware.jpg',
-    alt: 'Hardware Solutions',
-    title: 'Hardware Infrastructure',
-    category: 'Hardware',
-    description: 'Enterprise-grade hardware setup for optimal performance',
-  },
-  {
-    id: 3,
-    src: '/images/software.webp',
-    alt: 'Software Development',
-    title: 'Custom Software',
-    category: 'Software',
-    description: 'Tailored software solutions for unique business needs',
-  },
-  {
-    id: 4,
-    src: '/images/web.webp',
-    alt: 'Web Solutions',
-    title: 'Web Development',
-    category: 'Software',
-    description: 'Modern web applications with cutting-edge technology',
-  },
-  {
-    id: 5,
-    src: '/images/support.webp',
-    alt: 'IT Support',
-    title: 'Technical Support',
-    category: 'Services',
-    description: '24/7 technical support and maintenance services',
-  },
-  {
-    id: 6,
-    src: '/images/comm2.jpg',
-    alt: 'Communication',
-    title: 'Communication Systems',
-    category: 'Hardware',
-    description: 'Advanced communication infrastructure solutions',
-  },
-]
+export function PhotoGallery() {
+  const items = useQuery(api.gallery.listItems, {})
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [category, setCategory] = useState('All')
 
-function GalleryCard() {
-  const [selectedImage, setSelectedImage] = useState<(typeof galleryImages)[0] | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const gridRef = useRef<HTMLDivElement>(null)
+  const categories = useMemo(
+    () => ['All', ...new Set((items ?? []).map((item) => item.category ?? 'General'))],
+    [items]
+  )
 
-  const categories = ['All', ...new Set(galleryImages.map((img) => img.category))]
+  const filtered = useMemo(
+    () =>
+      (items ?? []).filter(
+        (item) => category === 'All' || (item.category ?? 'General') === category
+      ),
+    [items, category]
+  )
 
-  const filteredImages =
-    selectedCategory === 'All'
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === selectedCategory)
+  const selected = (items ?? []).find((item) => item._id === selectedId) ?? null
 
-  useLayoutEffect(() => {
-    if (!gridRef.current) return
-
-    const container = gridRef.current
-    const cards = container.querySelectorAll('[data-card]')
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        container,
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.3, ease: 'power2.out' },
-      )
-      if (cards.length > 0) {
-        gsap.fromTo(
-          cards,
-          { opacity: 0, scale: 0.95 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.4,
-            ease: 'power2.out',
-            stagger: 0.06,
-          },
-        )
-      }
-    }, container)
-
-    return () => ctx.revert()
-  }, [selectedCategory, filteredImages])
+  if (items === undefined) {
+    return (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Skeleton key={index} className="aspect-square rounded-2xl" />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="mt-8">
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-8 justify-center">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            variant={selectedCategory === category ? 'default' : 'outline'}
-            className={`${
-              selectedCategory === category
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'hover:bg-blue-50'
-            }`}
+      <div className="mb-8 flex flex-wrap justify-center gap-2">
+        {categories.map((item) => (
+          <button
+            key={item}
+            type="button"
+            onClick={() => setCategory(item)}
+            className={cn(
+              'rounded-full border px-4 py-1.5 text-xs font-medium transition-colors',
+              category === item
+                ? 'border-brand bg-brand/10 text-brand'
+                : 'border-border/60 text-muted-foreground hover:border-brand/40 hover:text-foreground'
+            )}
           >
-            {category}
-          </Button>
+            {item}
+          </button>
         ))}
       </div>
 
-      {/* Masonry Grid */}
-      <div
-        key={selectedCategory}
-        ref={gridRef}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {filteredImages.map((image) => (
-          <div key={image.id} data-card>
-            <Card
-              className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 border-2"
-              onClick={() => setSelectedImage(image)}
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border/60 py-20 text-center text-muted-foreground">
+          No gallery items yet.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((item) => (
+            <button
+              key={item._id}
+              type="button"
+              onClick={() => setSelectedId(item._id)}
+              className="group relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-muted text-left"
             >
-              <div className="relative aspect-square overflow-hidden">
+              {item.images[0] ? (
                 <Image
-                  src={image.src}
-                  alt={image.alt}
+                  src={item.images[0] ?? ''}
+                  alt={item.title ?? 'Gallery item'}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="font-bold text-xl mb-2">{image.title}</h3>
-                    <p className="text-blue-200 font-medium mb-1">{image.category}</p>
-                    <p className="text-gray-200 text-sm">{image.description}</p>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {image.category}
-                  </span>
-                </div>
+              ) : null}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-x-0 bottom-0 translate-y-2 p-6 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <p className="text-xs font-medium uppercase tracking-widest text-brand">
+                  {item.category ?? 'General'}
+                </p>
+                <h3 className="mt-1 text-lg font-semibold text-white">{item.title}</h3>
+                <p className="mt-1 line-clamp-2 text-sm text-white/70">{item.description}</p>
               </div>
-            </Card>
-          </div>
-        ))}
-      </div>
+              <span className="absolute right-4 top-4 rounded-full bg-brand px-3 py-1 text-xs font-medium text-brand-foreground">
+                {item.category ?? 'General'}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* Image Modal */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-6xl p-0 border-0 bg-transparent mx-1 md:mx-0">
-          {selectedImage && (
-            <div className="relative">
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 z-50 bg-white/90 hover:bg-white text-gray-900 rounded-full p-2 transition-colors"
-              >
-                <X size={24} />
-              </button>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden">
-                <div className="relative aspect-square lg:aspect-auto">
+      <Dialog open={!!selected} onOpenChange={() => setSelectedId(null)}>
+        <DialogContent className="max-w-5xl overflow-hidden border-border/60 bg-card p-0">
+          {selected ? (
+            <div className="grid lg:grid-cols-2">
+              <div className="relative aspect-square bg-muted lg:aspect-auto">
+                {selected.images[0] ? (
                   <Image
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
+                    src={selected.images[0] ?? ''}
+                    alt={selected.title ?? 'Gallery item'}
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
-                </div>
-                <div className="p-8 flex flex-col justify-center">
-                  <div className="mb-4">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {selectedImage.category}
-                    </span>
-                  </div>
-                  <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">
-                    {selectedImage.title}
-                  </h2>
-                  <p className="text-gray-600 text-md md:text-lg leading-relaxed mb-6">
-                    {selectedImage.description}
+                ) : null}
+              </div>
+              <div className="flex flex-col justify-center p-8">
+                <span className="mb-4 w-fit rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+                  {selected.category}
+                </span>
+                <h2 className="text-2xl font-bold">{selected.title}</h2>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {selected.description}
+                </p>
+                {selected.company ? (
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    Delivered by <span className="text-foreground">{selected.company}</span>
                   </p>
-                  <div className="flex gap-4">
-                    <Button className="bg-blue-600 hover:bg-blue-700">Learn More</Button>
-                    <Button variant="outline">View Similar</Button>
-                  </div>
-                </div>
+                ) : null}
+                <Button
+                  variant="outline"
+                  className="mt-6 w-fit"
+                  onClick={() => setSelectedId(null)}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Close
+                </Button>
               </div>
             </div>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>
   )
 }
 
-export default GalleryCard
+export default PhotoGallery

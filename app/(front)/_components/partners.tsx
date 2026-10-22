@@ -1,41 +1,46 @@
-import React from 'react'
-import { CardWithForm } from '@/components/card-with-form'
+import Image from 'next/image'
+import { fetchQuery } from 'convex/nextjs'
+import { api } from '@/convex/_generated/api'
 
-function Parnters() {
+async function Parnters() {
+  const partners = await fetchQuery(api.partners.listPartners, {})
+
   return (
-    <div className="py-4">
-      <div className=" text-center">
-        <h1 className="text-lg text-center pt-8 uppercase md:text-2xl text-blue-500">
-          Have Been Trusted
-        </h1>
-        <h2 className="text-2xl md:text-5xl font-bold py-4">Trusted By Experts</h2>
-        <p className="p-10">
-          Delivering unmatched service is what we live for. We create a culture of care and service
-          where our customer comes first.
-        </p>
+    <section className="border-y border-border/60 bg-surface/30 py-16">
+      <div className="container mx-auto px-4">
+        <div className="mb-10 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+            Have Been Trusted
+          </p>
+          <h2 className="mt-3 text-2xl font-bold md:text-4xl">Trusted By Experts</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Delivering unmatched service is what we live for. We create a culture of care and
+            service where our customer comes first.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {partners.map((partner) => (
+            <div
+              key={partner._id}
+              className="flex h-24 items-center justify-center rounded-xl border border-border/60 bg-background/40 p-4 transition-colors hover:border-brand/40"
+            >
+              {partner.logo ? (
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  width={160}
+                  height={64}
+                  className="max-h-12 w-auto object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0"
+                />
+              ) : (
+                <span className="text-sm font-medium text-muted-foreground">{partner.name}</span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center px-8 md:px-0  gap-8">
-        <CardWithForm
-          //   link={
-          //     "https://companieslogo.com/img/orig/OMU.JO_BIG-5d5b6185.png?t=1657183124"
-          //   }
-          name={'Networking'}
-          link={'/services/network'}
-        />
-        <CardWithForm
-          //   link={
-          //     "https://www.chronicle.co.zw/wp-content/uploads/sites/3/2013/07/Econet-logo.png"
-          //   }
-          name={'Software Solutions'}
-          link={'/services/software'}
-        />
-        <CardWithForm
-          //   link={"https://www.zimplats.com/data/2020/04/zimplatslogo.png"}
-          name={'Hardware Solutions'}
-          link={'/services/hardware'}
-        />
-      </div>
-    </div>
+    </section>
   )
 }
 

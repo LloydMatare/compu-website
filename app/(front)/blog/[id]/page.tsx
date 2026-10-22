@@ -1,22 +1,33 @@
 import type { Metadata } from 'next'
-import React from 'react'
+import { fetchQuery } from 'convex/nextjs'
+import { api } from '@/convex/_generated/api'
+import { PostArticle } from './post-article'
 
-type Props = {
+interface BlogPostPageProps {
   params: Promise<{ id: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { id } = await params
+  const post = await fetchQuery(api.posts.getBySlug, { slug: id }).catch(() => null)
+
+  if (!post) {
+    return { title: 'Article Not Found' }
+  }
+
   return {
-    title: `Blog Post ${id}`,
-    description: 'Read the latest technology insights and news from Compulink Systems.',
+    title: post.title,
+    description: post.excerpt ?? post.content.slice(0, 160),
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? post.content.slice(0, 160),
+      images: post.coverImage ? [post.coverImage] : undefined,
+      type: 'article',
+    },
   }
 }
 
-function BlogSinglePost() {
-    return (
-        <div>BlogSinglePost</div>
-    )
+export default async function BlogSinglePost({ params }: BlogPostPageProps) {
+  const { id } = await params
+  return <PostArticle slug={id} />
 }
-
-export default BlogSinglePost

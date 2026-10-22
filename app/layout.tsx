@@ -1,14 +1,31 @@
 import React from 'react'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import Navbar from './_components/navbar'
-import Footer from '@/app/(front)/_components/bottom'
-import './globals.css'
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
+import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
-import ChatbotWidget from '@/components/chatbot-widget'
-import JsonLd from '@/components/json-ld'
-import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants/site'
-import type { Metadata } from 'next'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import ConvexClientProvider from '@/components/ConvexClientProvider'
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS } from '@/lib/constants/site'
+import './globals.css'
+
+const geistSans = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
+  display: 'swap',
+})
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+  display: 'swap',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -17,16 +34,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  keywords: [
-    'IT solutions Zimbabwe',
-    'cloud computing Zimbabwe',
-    'cybersecurity Harare',
-    'software development Zimbabwe',
-    'networking services Zimbabwe',
-    'hardware solutions Zimbabwe',
-    'IT consulting Zimbabwe',
-    'managed IT services',
-  ],
+  keywords: SITE_KEYWORDS,
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
@@ -74,34 +82,47 @@ export const metadata: Metadata = {
   },
 }
 
-function Layout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b1120' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const googleVerification = (process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '').replace(
     /^google-site-verification=/,
-    '',
+    ''
   )
+
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable}`}
+    >
       <head>
         {googleVerification ? (
-          <meta
-            name="google-site-verification"
-            content={googleVerification}
-          />
+          <meta name="google-site-verification" content={googleVerification} />
         ) : null}
       </head>
-      <body>
-        <JsonLd type="Organization" />
-        <JsonLd type="WebSite" />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <Toaster />
-        <ChatbotWidget />
-        <Analytics />
-        <SpeedInsights />
+      <body className="min-h-dvh bg-background font-sans antialiased">
+        <ClerkProvider>
+          <ConvexClientProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+              <Toaster position="top-right" richColors closeButton />
+            </ThemeProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   )
 }
-
-export default Layout

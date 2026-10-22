@@ -1,36 +1,31 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useState, useRef, useLayoutEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Service from '../_components/service'
-import Hero from '../_components/hero'
+import Link from 'next/link'
+import React, { useState } from 'react'
 import {
-  Cloud,
-  Network,
-  Code,
-  Shield,
-  CheckCircle,
   ArrowRight,
-  Server,
+  ChartColumn,
+  CircleCheck,
+  Cloud,
+  Code,
   Database,
+  Lock,
+  Network,
+  Server,
+  Shield,
   Smartphone,
   Users,
-  BarChart3,
-  Lock,
 } from 'lucide-react'
-import Link from 'next/link'
 import GsapReveal from '@/components/ui/gsap-reveal'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import LinkButton from '@/components/link-button'
+import Hero from '../_components/hero'
+import Service from '../_components/service'
 
 const mainServices = [
   {
     id: 'cloud',
-    icon: <Cloud className="h-8 w-8" />,
+    icon: Cloud,
     title: 'Cloud Computing',
     description: 'Secure, scalable cloud infrastructure and migration services',
     fullDescription:
@@ -41,12 +36,12 @@ const mainServices = [
       'Cloud Migration',
       'Disaster Recovery',
     ],
-    image: '/images/cloud-services.jpg',
+    image: '/images/cloud.webp',
     link: '/services/cloud-computing',
   },
   {
     id: 'networking',
-    icon: <Network className="h-8 w-8" />,
+    icon: Network,
     title: 'Networking',
     description: 'Enterprise-grade network infrastructure and security',
     fullDescription:
@@ -57,12 +52,12 @@ const mainServices = [
       'Network Security',
       '24/7 Monitoring',
     ],
-    image: '/images/networking-services.jpg',
+    image: '/images/net.webp',
     link: '/services/networks',
   },
   {
     id: 'software',
-    icon: <Code className="h-8 w-8" />,
+    icon: Code,
     title: 'Software Development',
     description: 'Custom applications and digital solutions',
     fullDescription:
@@ -73,12 +68,12 @@ const mainServices = [
       'API Integration',
       'Custom Solutions',
     ],
-    image: '/images/software-dev.jpg',
+    image: '/images/software.webp',
     link: '/services/software',
   },
   {
     id: 'cybersecurity',
-    icon: <Shield className="h-8 w-8" />,
+    icon: Shield,
     title: 'Cyber Security',
     description: 'Comprehensive security and protection solutions',
     fullDescription:
@@ -89,23 +84,23 @@ const mainServices = [
       'Security Compliance',
       'Incident Response',
     ],
-    image: '/images/cybersecurity-services.jpg',
+    image: '/images/cyber.webp',
     link: '/services/cyber-security',
   },
   {
     id: 'hardware',
-    icon: <Server className="h-8 w-8" />,
+    icon: Server,
     title: 'Hardware Solutions',
     description: 'Enterprise hardware and infrastructure setup',
     fullDescription:
       'Complete hardware solutions including server setup, storage solutions, and IT infrastructure implementation for optimal performance.',
     features: ['Server Setup', 'Storage Solutions', 'IT Infrastructure', 'Hardware Maintenance'],
-    image: '/images/hardware-services.jpg',
+    image: '/images/hardware.jpg',
     link: '/services/hardware',
   },
   {
     id: 'consulting',
-    icon: <Users className="h-8 w-8" />,
+    icon: Users,
     title: 'IT Consulting',
     description: 'Strategic technology advisory services',
     fullDescription:
@@ -116,353 +111,340 @@ const mainServices = [
       'Process Optimization',
       'IT Audits',
     ],
-    image: '/images/consulting-services.jpg',
+    image: '/images/connect.jpg',
     link: '/services/consulting',
   },
 ]
 
 const additionalServices = [
   {
-    icon: <Smartphone className="h-6 w-6" />,
+    icon: Smartphone,
     title: 'Mobile Solutions',
     description: 'iOS and Android app development',
-    link: '/services/mobile',
+    link: '/services/software',
   },
   {
-    icon: <Database className="h-6 w-6" />,
+    icon: Database,
     title: 'Data Analytics',
     description: 'Business intelligence and data insights',
-    link: '/services/data-analytics',
+    link: '/services/cloud-computing',
   },
   {
-    icon: <BarChart3 className="h-6 w-6" />,
+    icon: ChartColumn,
     title: 'Digital Marketing',
     description: 'Online presence and growth strategies',
-    link: '/services/digital-marketing',
+    link: '/services/consulting',
   },
   {
-    icon: <Lock className="h-6 w-6" />,
+    icon: Lock,
     title: 'Managed IT',
     description: '24/7 IT support and management',
-    link: '/services/managed-it',
+    link: '/services/technical',
   },
+]
+
+const stats = [
+  { value: '30+', label: 'Years Experience' },
+  { value: '500+', label: 'Projects Completed' },
+  { value: '99.9%', label: 'Uptime Guarantee' },
+  { value: '24/7', label: 'Support Available' },
 ]
 
 function Services() {
   const [selectedService, setSelectedService] = useState(mainServices[0])
-  const serviceDetailsRef = useRef<HTMLDivElement>(null)
-  const quickAccessGridRef = useRef<HTMLDivElement>(null)
-  const additionalGridRef = useRef<HTMLDivElement>(null)
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const qaContainer = quickAccessGridRef.current
-      if (qaContainer) {
-        const qaEls = qaContainer.querySelectorAll('[data-reveal]')
-        if (qaEls.length) {
-          gsap.fromTo(
-            qaEls,
-            { y: 40, autoAlpha: 0 },
-            {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.9,
-              ease: 'power3.out',
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: qaContainer,
-                start: 'top 85%',
-              },
-            }
-          )
-        }
-      }
-
-      const addContainer = additionalGridRef.current
-      if (addContainer) {
-        const addEls = addContainer.querySelectorAll('[data-reveal]')
-        if (addEls.length) {
-          gsap.fromTo(
-            addEls,
-            { y: 40, autoAlpha: 0 },
-            {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.9,
-              ease: 'power3.out',
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: addContainer,
-                start: 'top 85%',
-              },
-            }
-          )
-        }
-      }
-    })
-
-    return () => ctx.revert()
-  }, [])
-
-  useLayoutEffect(() => {
-    const el = serviceDetailsRef.current
-    if (!el) return
-    gsap.fromTo(
-      el,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
-    )
-  }, [selectedService.id])
+  const SelectedIcon = selectedService.icon
 
   return (
     <div>
-      <Hero backImage="software.webp" image="" />
+      <Hero
+        backImage="software.webp"
+        image=""
+        title="Comprehensive IT Solutions"
+        subtitle="Technology that scales with your business"
+        description="Offering a variety of services, Managed Services are provided by Compulink Systems through a Tier 3 Data Centre offering cloud services. The Data Centre hosts services on a secure Private Cloud Platform leveraging on leading ISPs to ensure availability at all times."
+        primaryButtonText="Talk to an Advisor"
+        primaryButtonLink="/contact"
+        secondaryButtonText="Explore Our Work"
+        secondaryButtonLink="/portfolio"
+        showStats={false}
+      />
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <GsapReveal
-          className="text-center max-w-4xl mx-auto mb-16"
-        >
-          <h1 className="text-lg md:text-4xl font-bold text-gray-800 mb-6">
-            Comprehensive <span className="text-blue-600">IT Solutions</span>
-          </h1>
-          <p className="text-sm md:text-lg text-gray-600 mb-8">
-            Offering a variety of services, Managed Services are provided by Compulink Systems
-            through a Tier 3 Data Centre offering cloud services. The Data Centre hosts services on
-            a secure Private Cloud Platform leveraging on leading ISPs to ensure availability at all
-            times.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/contact">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                Get Started
-              </Button>
-            </Link>
-            <Link href="/contact?type=consultation">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              >
-                Schedule Consultation
-              </Button>
-            </Link>
-          </div>
-        </GsapReveal>
+      {/* Core services with interactive selector */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
 
-        {/* Main Services Navigation */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">Our Core Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-md md:text-lg">
-              Explore our comprehensive range of IT services designed to meet your business needs
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Our Core Services
             </p>
-          </div>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Everything your IT <span className="text-gradient-brand">needs, in one place</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Explore our comprehensive range of IT services designed to meet your business needs —
+              from private cloud and networking to custom software and hardware supply.
+            </p>
+          </GsapReveal>
 
-          {/* Service Navigation Tabs */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {mainServices.map((service) => (
-              <button
-                key={service.id}
-                onClick={() => setSelectedService(service)}
-                className={`flex items-center gap-3 px-6 py-4 rounded-lg border-2 transition-all duration-300 ${
-                  selectedService.id === service.id
-                    ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-md'
-                    : 'border-gray-200 hover:border-blue-300 hover:bg-blue-25'
-                }`}
-              >
-                <div
-                  className={`p-2 rounded-lg ${
-                    selectedService.id === service.id ? 'bg-blue-100' : 'bg-gray-100'
+          <div
+            className="flex flex-wrap justify-center gap-3"
+            role="group"
+            aria-label="Select a core service"
+          >
+            {mainServices.map((service) => {
+              const Icon = service.icon
+              const isActive = selectedService.id === service.id
+
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  onClick={() => setSelectedService(service)}
+                  aria-pressed={isActive}
+                  className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-300 ease-out-expo focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
+                    isActive
+                      ? 'border-brand/50 bg-brand/10 shadow-[0_0_40px_-12px_var(--glow)]'
+                      : 'border-border/60 bg-card/40 hover:-translate-y-0.5 hover:border-brand/30'
                   }`}
                 >
-                  {service.icon}
-                </div>
-                <span className="font-semibold text-md md-text-lg">{service.title}</span>
-              </button>
-            ))}
+                  <span
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                      isActive ? 'bg-brand/15 text-brand' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <span
+                    className={`font-display text-sm font-semibold ${
+                      isActive ? 'text-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {service.title}
+                  </span>
+                </button>
+              )
+            })}
           </div>
 
-          {/* Selected Service Details */}
           <div
-            ref={serviceDetailsRef}
             key={selectedService.id}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-gradient-to-r from-blue-50 to-gray-50 rounded-2xl p-8"
+            className="mt-10 grid items-center gap-10 rounded-3xl border border-border/60 bg-card/50 p-6 shadow-[0_0_60px_-40px_var(--glow)] backdrop-blur-xl md:p-10 lg:grid-cols-2"
           >
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-blue-100 rounded-xl">{selectedService.icon}</div>
-                <h3 className="text-lg md:text-3xl font-bold text-gray-800">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+                  <SelectedIcon className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <h3 className="font-display text-xl font-bold md:text-2xl">
                   {selectedService.title}
                 </h3>
               </div>
-              <p className="text-gray-700 text-md md-text-lg mb-6 leading-relaxed">
+
+              <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
                 {selectedService.fullDescription}
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-                {selectedService.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <Link href={selectedService.link}>
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                    Learn More
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/contact?service=quote">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-blue-600 text-blue-600 hover:bg-blue-50"
+
+              <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {selectedService.features.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/40 px-3.5 py-2.5 text-sm text-foreground/90"
                   >
-                    Get Quote
-                  </Button>
-                </Link>
+                    <CircleCheck className="h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <LinkButton
+                  link={selectedService.link}
+                  className="rounded-full px-6 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+                >
+                  Learn More
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </LinkButton>
+                <LinkButton
+                  link="/contact?service=quote"
+                  variant="outline"
+                  className="rounded-full border-border/70 bg-card/50 px-6 font-semibold backdrop-blur-sm hover:border-brand/40"
+                >
+                  Get a Quote
+                </LinkButton>
               </div>
             </div>
-            <div className="flex justify-center">
+
+            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border/60">
               <Image
                 src={selectedService.image}
-                height={400}
-                width={500}
-                alt={selectedService.title}
-                className="rounded-xl shadow-lg"
+                alt={`${selectedService.title} solutions from Compulink Systems`}
+                fill
+                className="object-cover"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/60 to-transparent"
+                aria-hidden="true"
               />
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Quick Access Services Grid */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">All Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-md md-text-lg">
-              Quick access to all our specialized IT services
+      {/* All services grid */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-surface/30 py-16 lg:py-24">
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Full Service Portfolio
             </p>
-          </div>
-          <div ref={quickAccessGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mainServices.map((service, index) => (
-              <div
-                key={service.id}
-                data-reveal
-                style={{ opacity: 0 }}
-              >
-                <Link href={service.link}>
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:border-blue-300 group cursor-pointer border-2">
-                    <CardHeader className="pb-3">
-                      <div className="p-3 bg-blue-100 rounded-lg w-fit mb-3 group-hover:bg-blue-200 transition-colors">
-                        <div className="text-blue-600">{service.icon}</div>
-                      </div>
-                      <CardTitle className="text-xl mb-2">{service.title}</CardTitle>
-                      <CardDescription className="text-base">{service.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center text-blue-600 font-semibold group-hover:underline">
-                        View service details
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Additional Services */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">
-              Specialized Services
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              All <span className="text-gradient-brand">services</span>
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-md md:text-lg">
-              Additional services to complement your technology stack
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Quick access to every specialised service we deliver across infrastructure, software
+              and support.
             </p>
-          </div>
-          <div ref={additionalGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {additionalServices.map((service, index) => (
-              <div
-                key={index}
-                data-reveal
-                style={{ opacity: 0 }}
-              >
-                <Link href={service.link}>
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:border-blue-300 group cursor-pointer">
-                    <CardHeader>
-                      <div className="p-3 bg-blue-100 rounded-lg w-fit mb-3 group-hover:bg-blue-200 transition-colors">
-                        <div className="text-blue-600">{service.icon}</div>
-                      </div>
-                      <CardTitle className="text-lg mb-2">{service.title}</CardTitle>
-                      <CardDescription>{service.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm">
-                        Explore service
-                        <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+          </GsapReveal>
+
+          <GsapReveal childrenSelector="[data-service-card]" className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {mainServices.map((service) => {
+              const Icon = service.icon
+
+              return (
+                <div key={service.id} data-service-card>
+                  <Link
+                    href={service.link}
+                    className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/50 p-6 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_0_40px_-12px_var(--glow)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-5 font-display text-lg font-bold text-foreground">
+                      {service.title}
+                    </h3>
+                    <p className="mt-2 flex-grow text-sm leading-relaxed text-muted-foreground">
+                      {service.description}
+                    </p>
+                    <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                      View service details
+                      <ArrowRight
+                        className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Link>
+                </div>
+              )
+            })}
+          </GsapReveal>
+        </div>
+      </section>
+
+      {/* Specialized services */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Specialised Services
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Built to <span className="text-gradient-brand">complement</span> your stack
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Additional services to complement your technology stack and unlock new revenue
+              streams.
+            </p>
+          </GsapReveal>
+
+          <GsapReveal
+            childrenSelector="[data-extra-card]"
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {additionalServices.map((service) => {
+              const Icon = service.icon
+
+              return (
+                <div key={service.title} data-extra-card>
+                  <Link
+                    href={service.link}
+                    className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/50 p-6 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-5 font-display text-base font-bold text-foreground">
+                      {service.title}
+                    </h3>
+                    <p className="mt-2 flex-grow text-sm leading-relaxed text-muted-foreground">
+                      {service.description}
+                    </p>
+                    <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-brand">
+                      Explore service
+                      <ArrowRight
+                        className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Link>
+                </div>
+              )
+            })}
+          </GsapReveal>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-card/40 py-12 lg:py-16">
+        <div className="container relative mx-auto px-4">
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 md:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="bg-card/70 px-4 py-6 text-center backdrop-blur-sm">
+                <p className="font-display text-2xl font-bold text-gradient-brand md:text-4xl">
+                  {stat.value}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground md:text-sm">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Quick Stats */}
-        <div className="bg-blue-600 text-white rounded-2xl p-8 mb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-lg md:text-4xl font-bold mb-2">30+</div>
-              <div className="text-blue-100">Years Experience</div>
-            </div>
-            <div>
-              <div className="text-lg md:text-4xl font-bold mb-2">500+</div>
-              <div className="text-blue-100">Projects Completed</div>
-            </div>
-            <div>
-              <div className="text-lg md:text-4xl font-bold mb-2">99.9%</div>
-              <div className="text-blue-100">Uptime Guarantee</div>
-            </div>
-            <div>
-              <div className="text-lg md:text-4xl font-bold mb-2">24/7</div>
-              <div className="text-blue-100">Support Available</div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="text-center bg-gray-50 rounded-2xl p-12 mb-16">
-          <h2 className=" font-bold text-gray-800 mb-4 text-md md:text-lg">
-            Ready to Transform Your Business?
-          </h2>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            {`Let's discuss how our IT solutions can drive your business forward. Schedule a free consultation with our experts.`}
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/contact?type=project">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8">
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto max-w-3xl rounded-3xl border border-border/60 bg-card/50 p-8 text-center shadow-[0_0_80px_-40px_var(--glow)] backdrop-blur-xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Get Started
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Ready to <span className="text-gradient-brand">transform</span> your business?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Let&apos;s discuss how our IT solutions can drive your business forward. Schedule a free
+              consultation with our experts.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <LinkButton
+                link="/contact?type=project"
+                className="rounded-full px-8 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+              >
                 Start Your Project
-              </Button>
-            </Link>
-            <Link href="/contact?type=sales">
-              <Button
-                size="lg"
+              </LinkButton>
+              <LinkButton
+                link="/contact?type=sales"
                 variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8"
+                className="rounded-full border-border/70 bg-card/50 px-8 font-semibold backdrop-blur-sm hover:border-brand/40"
               >
                 Contact Sales
-              </Button>
-            </Link>
-          </div>
+              </LinkButton>
+            </div>
+          </GsapReveal>
         </div>
-      </div>
+      </section>
 
-      {/* All Services Grid Section */}
+      {/* Shared services section */}
       <Service />
     </div>
   )

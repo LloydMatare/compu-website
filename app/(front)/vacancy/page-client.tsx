@@ -1,6 +1,9 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import type { Id } from '@/convex/_generated/dataModel'
 import { VacancyCard } from './_components/vacancyCard'
 import { VacancyModal } from './_components/vacancyModal'
 import Hero from '../_components/hero'
@@ -14,7 +17,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 interface Vacancy {
-  _id: string
+  _id: Id<'vacancies'>
   position: string
   status: string
   duration: string
@@ -30,74 +33,29 @@ interface Vacancy {
 }
 
 export default function VacancyPage() {
-  const [vacancies, setVacancies] = useState<Vacancy[]>([])
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const vacancyGridRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const fetchVacancies = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        console.log('🔄 Fetching vacancies from API...')
+  const docs = useQuery(api.vacancies.list, { publishedOnly: true })
+  const loading = docs === undefined
 
-        const response = await fetch('/api/vacancies')
-        console.log('📊 API Response status:', response.status)
-        console.log('📊 API Response headers:', response.headers)
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error('❌ API Error response:', errorText)
-          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
-        }
-
-        const data = await response.json()
-        console.log('✅ API Response data:', data)
-        console.log('✅ Data is array?', Array.isArray(data))
-        console.log('✅ Number of items:', data.length)
-
-        if (!Array.isArray(data)) {
-          console.error('❌ Data is not an array:', typeof data)
-          throw new Error('Invalid data format received')
-        }
-
-        // Ensure each item has required properties
-        const formattedData = data.map((vacancy: any, index: number) => {
-          console.log(`📝 Vacancy ${index}:`, vacancy)
-          return {
-            _id: vacancy._id || `temp-${index}`,
-            position: vacancy.position || 'Unknown Position',
-            status: vacancy.status || 'open',
-            duration: vacancy.duration || 'Full-time',
-            imageUrl: vacancy.imageUrl || '/images/default-vacancy.jpg',
-            description: vacancy.description || '',
-            qualifications: Array.isArray(vacancy.qualifications) ? vacancy.qualifications : [],
-            skills: Array.isArray(vacancy.skills) ? vacancy.skills : [],
-            experience: vacancy.experience || '',
-            category: vacancy.category || 'Uncategorized',
-            location: vacancy.location || 'Remote',
-            salary: vacancy.salary || 'Competitive',
-            createdAt: vacancy.createdAt || new Date().toISOString(),
-          }
-        })
-
-        console.log('✅ Formatted data:', formattedData)
-        setVacancies(formattedData)
-      } catch (error: any) {
-        console.error('❌ Error fetching vacancies:', error)
-        setError(`Failed to load vacancies: ${error.message}`)
-        setVacancies([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchVacancies()
-  }, [])
+  const vacancies: Vacancy[] = (docs ?? []).map((vacancy) => ({
+    _id: vacancy._id,
+    position: vacancy.position,
+    status: vacancy.status,
+    duration: vacancy.duration ?? 'Full-time',
+    imageUrl: vacancy.imageUrl ?? '/images/support.webp',
+    description: vacancy.description ?? '',
+    qualifications: vacancy.qualification ? [vacancy.qualification] : [],
+    skills: [],
+    experience: '',
+    category: vacancy.category ?? 'Uncategorized',
+    location: 'Zimbabwe',
+    salary: 'Competitive',
+    createdAt: new Date(vacancy._creationTime).toISOString(),
+  }))
 
   // Extract unique categories from vacancies
   const categories = [
@@ -154,28 +112,6 @@ export default function VacancyPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading career opportunities...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div>
-        <Hero
-          backImage="support.webp"
-          image=""
-          title="Career Opportunities"
-          subtitle="Join Our Team of Technology Innovators"
-        />
-        <div className="container mx-auto px-4 py-16 text-center">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8">
-            <h3 className="text-xl font-semibold text-red-800 mb-2">Error Loading Vacancies</h3>
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
-              Try Again
-            </Button>
-          </div>
         </div>
       </div>
     )

@@ -3,36 +3,44 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Networking Services',
   description:
-    'Enterprise-grade networking solutions in Zimbabwe. Wireless networks, network infrastructure, and network security from Compulink.',
+    'Enterprise-grade networking solutions in Zimbabwe. Wireless networks, structured cabling, network infrastructure and network security from Compulink Systems.',
 }
 
 import React from 'react'
-import ServiceTop from '../../_components/serviceTop'
-import Hero from '../../_components/hero'
-import { Button } from '@/components/ui/button'
+import { Server, Shield, Wifi } from 'lucide-react'
+import GsapReveal from '@/components/ui/gsap-reveal'
+import LinkButton from '@/components/link-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Wifi, Server, Shield, CheckCircle } from 'lucide-react'
+import Hero from '../../_components/hero'
+import ServiceTop from '../../_components/serviceTop'
 
 function Networks() {
   const networkServices = [
     {
-      icon: <Wifi className="h-6 w-6" />,
+      icon: Wifi,
       title: 'Wireless Networks',
       description: 'High-performance wireless infrastructure',
       features: ['Wi-Fi 6/6E', 'Mesh Networks', 'Guest Access'],
     },
     {
-      icon: <Server className="h-6 w-6" />,
+      icon: Server,
       title: 'Network Infrastructure',
       description: 'Robust wired network solutions',
       features: ['Structured Cabling', 'Switching', 'Routing'],
     },
     {
-      icon: <Shield className="h-6 w-6" />,
+      icon: Shield,
       title: 'Network Security',
       description: 'Comprehensive network protection',
       features: ['Firewalls', 'VPN', 'Access Control'],
     },
+  ]
+
+  const metrics = [
+    { value: '99.99%', label: 'Network Uptime' },
+    { value: '24/7', label: 'Monitoring & Support' },
+    { value: '1Gbps+', label: 'Connection Speed' },
+    { value: 'Low ms', label: 'Latency' },
   ]
 
   return (
@@ -41,90 +49,145 @@ function Networks() {
         backImage="net.jpg"
         image=""
         title="Network Solutions"
-        subtitle="Enterprise-Grade Networking for Seamless Connectivity"
+        subtitle="Enterprise-grade networking for seamless connectivity"
+        description="Design, deployment and management of the networks that keep your people, sites and systems talking to each other."
+        primaryButtonText="Network Assessment"
+        primaryButtonLink="/contact"
+        secondaryButtonText="View Case Studies"
+        secondaryButtonLink="/portfolio"
+        showStats={false}
       />
 
-      <div className="container mx-auto px-4 py-16">
-        <ServiceTop
-          image="net.webp"
-          title="Advanced Network Solutions"
-          description="Comprehensive networking services that ensure reliable, secure, and high-performance connectivity for your organization."
-          description2="From network design and implementation to ongoing management and security, we provide end-to-end solutions that keep your business connected and protected."
-        />
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
 
-        {/* Network Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {networkServices.map((service, index) => (
-            <Card
-              key={index}
-              className="hover:shadow-lg transition-all duration-300 border-purple-100"
-            >
-              <CardHeader>
-                <div className="p-3 bg-purple-100 rounded-lg w-fit mb-4">
-                  <div className="text-purple-600">{service.icon}</div>
-                </div>
-                <CardTitle className="text-xl mb-2">{service.title}</CardTitle>
-                <p className="text-gray-600 text-sm">{service.description}</p>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-gray-700">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-14 max-w-4xl">
+            <ServiceTop
+              image="net.webp"
+              title="Advanced Network Solutions"
+              description="Comprehensive networking services that ensure reliable, secure and high-performance connectivity for your organisation."
+              description2="From network design and implementation to ongoing management and security, we provide end-to-end solutions that keep your business connected and protected."
+            />
+          </GsapReveal>
 
-        {/* Network Performance */}
-        <div className="bg-gradient-to-r from-purple-50 to-gray-50 rounded-2xl p-8 mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-            Network Performance Metrics
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-purple-600 mb-2">99.99%</div>
-              <p className="text-gray-600">Network Uptime</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-purple-600 mb-2">24/7</div>
-              <p className="text-gray-600">Monitoring & Support</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-purple-600 mb-2">1Gbps+</div>
-              <p className="text-gray-600">Connection Speed</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-purple-600 mb-2">LMS</div>
-              <p className="text-gray-600">Latency</p>
-            </div>
-          </div>
-        </div>
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Network Services
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Connectivity your teams can <span className="text-gradient-brand">rely on</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Wired and wireless estates engineered, cabled, commissioned and supported by the
+              same team.
+            </p>
+          </GsapReveal>
 
-        {/* CTA Section */}
-        <div className="text-center bg-purple-600 text-white rounded-2xl p-12">
-          <h2 className="text-3xl font-bold mb-4">Optimize Your Network Infrastructure</h2>
-          <p className="text-purple-100 mb-8 max-w-2xl mx-auto">
-            {` Ensure your network can handle today's demands and tomorrow's growth with our expert solutions.`}
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-              Network Assessment
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-purple-700"
-            >
-              View Case Studies
-            </Button>
-          </div>
+          <GsapReveal
+            childrenSelector="[data-network-card]"
+            className="grid grid-cols-1 gap-6 md:grid-cols-3"
+          >
+            {networkServices.map((service) => (
+              <div key={service.title} data-network-card>
+                <Card className="h-full gap-0 rounded-2xl border border-border/60 bg-card/50 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_0_40px_-12px_var(--glow)]">
+                  <CardHeader>
+                    <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+                      <service.icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <CardTitle className="mt-4 font-display text-lg font-bold text-foreground">
+                      {service.title}
+                    </CardTitle>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {service.description}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2.5">
+                      {service.features.map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex items-center gap-2.5 text-sm text-foreground/90"
+                        >
+                          <span
+                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                            aria-hidden="true"
+                          />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </GsapReveal>
         </div>
-      </div>
+      </section>
+
+      <section className="relative overflow-hidden border-b border-border/60 bg-surface/30 py-16 lg:py-24">
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Performance
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Network performance <span className="text-gradient-brand">metrics</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Service levels we hold ourselves to — and monitor continuously across managed
+              networks.
+            </p>
+          </GsapReveal>
+
+          <GsapReveal
+            childrenSelector="[data-metric]"
+            className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 lg:grid-cols-4"
+          >
+            {metrics.map((metric) => (
+              <div key={metric.label} data-metric className="bg-card/70 px-4 py-8 text-center backdrop-blur-sm">
+                <p className="font-display text-2xl font-bold text-gradient-brand md:text-3xl">
+                  {metric.value}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{metric.label}</p>
+              </div>
+            ))}
+          </GsapReveal>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto max-w-3xl rounded-3xl border border-border/60 bg-card/50 p-8 text-center shadow-[0_0_80px_-40px_var(--glow)] backdrop-blur-xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Next Step
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Optimise your <span className="text-gradient-brand">network infrastructure</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Ensure your network can handle today&apos;s demands and tomorrow&apos;s growth with our
+              expert solutions.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <LinkButton
+                link="/contact?service=network-assessment"
+                className="rounded-full px-8 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+              >
+                Network Assessment
+              </LinkButton>
+              <LinkButton
+                link="/portfolio"
+                variant="outline"
+                className="rounded-full border-border/70 bg-card/50 px-8 font-semibold backdrop-blur-sm hover:border-brand/40"
+              >
+                View Case Studies
+              </LinkButton>
+            </div>
+          </GsapReveal>
+        </div>
+      </section>
     </div>
   )
 }

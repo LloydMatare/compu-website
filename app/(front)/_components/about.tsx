@@ -1,84 +1,109 @@
 import Image from 'next/image'
 import React from 'react'
+import GsapReveal from '@/components/ui/gsap-reveal'
+import { Badge } from '@/components/ui/badge'
 import LinkButton from '@/components/link-button'
-import { Dot, CheckCircle } from 'lucide-react'
+import { Award, Code, Network, Server, Target, Workflow } from 'lucide-react'
+
+const features = [
+  { icon: Code, label: 'Innovative Software Development' },
+  { icon: Workflow, label: 'Software & System Integration' },
+  { icon: Network, label: 'Network Infrastructure' },
+  { icon: Server, label: 'Server Setup & Configuration' },
+  { icon: Award, label: '30 Years of IT Excellence' },
+  { icon: Target, label: 'Industry-Leading Expertise' },
+]
 
 function About() {
-  const features = [
-    'Innovative Software Development',
-    'Software & System Integration',
-    'Network Infrastructure',
-    'Server Setup & Configuration',
-    '30 Years of IT Excellence',
-    'Industry-Leading Expertise',
-  ]
-
   return (
-    <div className="bg-white py-16 lg:py-24">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Image Section */}
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src={'/images/ab.gif'}
-                alt="Compulink Systems - 30 Years of IT Excellence"
-                height={600}
-                width={600}
-                className="w-full h-auto object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
-            </div>
+    <section className="relative overflow-hidden border-y border-border/60 bg-surface/30 py-16 lg:py-24">
+      <div className="pointer-events-none absolute inset-0 grid-fade opacity-50" aria-hidden="true" />
 
-            {/* Experience Badge */}
-            <div className="hidden md:flex absolute  -bottom-6 -right-6 bg-blue-600 text-white p-6 rounded-2xl shadow-2xl">
-              <div className="text-center">
-                <div className="text-3xl font-bold">30+</div>
-                <div className="text-sm font-medium">Years Experience</div>
+      <div className="container relative mx-auto px-4">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Visual */}
+          <GsapReveal distance={48} className="relative">
+            <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 shadow-[0_0_60px_-24px_var(--glow)]">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src="/images/ab.gif"
+                  alt="Compulink Systems — 30 years of IT excellence"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
               </div>
             </div>
-          </div>
 
-          {/* Content Section */}
-          <div className="flex flex-col">
-            <h1 className="text-blue-600 uppercase font-semibold tracking-wider text-lg mb-4">
-              Our Story
-            </h1>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 leading-tight">
-              Three Decades of IT Excellence & Innovation
+            {/* Experience badge */}
+            <div className="absolute -bottom-6 -right-4 rounded-2xl border border-border/60 bg-card/80 px-6 py-5 shadow-lg backdrop-blur-xl md:-right-6">
+              <p className="font-display text-3xl font-bold text-gradient-brand">30+</p>
+              <p className="mt-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Years Experience
+              </p>
+            </div>
+          </GsapReveal>
+
+          {/* Copy */}
+          <GsapReveal distance={48} delay={0.1}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">Our Story</p>
+            <h2 className="mt-3 font-display text-2xl font-bold leading-tight md:text-4xl">
+              Three Decades of <span className="text-gradient-brand">IT Excellence</span> &amp;
+              Innovation
             </h2>
-            <p className="text-gray-600 text-md leading-relaxed mb-8">
+            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
               For over 30 years, Compulink Systems has been at the forefront of the IT ecosystem,
               delivering high-standard products and services to various institutions. Our expertise
               spans networking services, cyber security, software solutions, and hardware supply,
               making us a trusted partner in digital transformation.
             </p>
 
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <CheckCircle className="text-blue-500 flex-shrink-0" size={20} />
-                  <span className="text-gray-700 font-medium">{feature}</span>
-                </div>
+            <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {features.map((feature) => (
+                <li
+                  key={feature.label}
+                  className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-4 py-3 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-brand/40"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                    <feature.icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <span className="text-sm font-medium text-foreground">{feature.label}</span>
+                </li>
               ))}
+            </ul>
+
+            <blockquote className="mt-8 border-l-2 border-brand/60 pl-5">
+              <p className="font-display text-base font-medium italic leading-relaxed text-foreground/90 md:text-lg">
+                Building a brighter future with technology, ensuring every entity is polished with
+                innovation.
+              </p>
+            </blockquote>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <LinkButton
+                link="/portfolio"
+                name="Our Portfolio"
+                className="rounded-full px-6 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+              />
+              <LinkButton
+                link="/contact"
+                name="Talk to Our Team"
+                variant="outline"
+                className="rounded-full border-border/70 bg-card/50 px-6 font-semibold hover:border-brand/40"
+              />
             </div>
 
-            <p className="text-gray-500 text-lg italic mb-8 border-l-4 border-blue-500 pl-4">
-              {`Building a brighter future with technology, ensuring every entity is polished with innovation!`}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <LinkButton link="/portfolio" name="Our Portfolio" />
-              <button className="px-6 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 rounded-lg font-medium">
-                Download Brochure
-              </button>
-            </div>
-          </div>
+            <Badge
+              variant="outline"
+              className="mt-8 h-auto rounded-full border-border/60 bg-card/40 px-4 py-1.5 text-xs font-medium text-muted-foreground"
+            >
+              Headquartered in Harare, serving clients across Southern Africa
+            </Badge>
+          </GsapReveal>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

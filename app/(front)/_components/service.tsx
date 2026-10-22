@@ -1,25 +1,76 @@
 import React from 'react'
+import Image from 'next/image'
+import GsapReveal from '@/components/ui/gsap-reveal'
 import LinkButton from '@/components/link-button'
-import { ChartArea, Download, DownloadCloud, Lock, Network, ArrowRight } from 'lucide-react'
+import { ArrowRight, ChartArea, CloudDownload, Download, Lock, Network } from 'lucide-react'
 
-export function ServiceCard({ icon, name, description, link }: any) {
+export interface ServiceCardProps {
+  /** Optional icon node rendered above the title. */
+  icon?: React.ReactNode
+  /** Card heading. */
+  name?: string
+  /** Alternative heading used by the technical service pages. */
+  title?: string
+  /** Optional artwork rendered above the title. */
+  image?: string
+  description?: string
+  link: string
+}
+
+export function ServiceCard({
+  icon,
+  name,
+  title,
+  image,
+  description,
+  link,
+}: ServiceCardProps) {
+  const heading = name ?? title ?? ''
+
   return (
-    <div className="group bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 h-full flex flex-col">
-      <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-700 transition-colors">
-        {name}
-      </h3>
-      <p className="text-gray-600 leading-relaxed text-md flex-grow mb-4">{description}</p>
-      <div className="mt-auto">
-        <LinkButton link={link} name={'Explore'} />
-      </div>
-    </div>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-6 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_0_40px_-12px_var(--glow)]">
+      {icon ? (
+        <span
+          className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand [&_svg]:h-5 [&_svg]:w-5"
+          aria-hidden="true"
+        >
+          {icon}
+        </span>
+      ) : image ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/60">
+          <Image
+            src={`/images/${image}`}
+            alt={heading}
+            fill
+            className="object-cover transition-transform duration-500 ease-out-expo group-hover:scale-105"
+          />
+        </div>
+      ) : null}
+
+      <h3 className="mt-5 font-display text-lg font-bold text-foreground">{heading}</h3>
+
+      {description && (
+        <p className="mt-2 flex-grow text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+      )}
+
+      <LinkButton
+        link={link}
+        variant="ghost"
+        className="mt-5 w-fit gap-1 px-0 text-sm font-semibold text-brand hover:bg-transparent hover:text-brand/80"
+      >
+        Explore
+        <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1" />
+      </LinkButton>
+    </article>
   )
 }
 
 function Service() {
   const services = [
     {
-      icon: <DownloadCloud />,
+      icon: <CloudDownload />,
       name: 'Cloud Computing',
       description:
         'Cloud technology centralizes data capture, storage, and interpretation processes while reducing costs and generating faster, more precise data-led insights to drive performance.',
@@ -56,25 +107,27 @@ function Service() {
   ]
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 lg:py-24">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-blue-600 uppercase font-semibold tracking-wider text-lg mb-4">
+    <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+      <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+
+      <div className="container relative mx-auto px-4">
+        <GsapReveal className="mx-auto mb-14 max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand">
             Our Services
-          </h1>
-          <h2 className="text-lg md:text-4xl font-bold text-gray-800 mb-6">
-            Bringing Technology from the Horizon
+          </p>
+          <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+            Bringing Technology from the <span className="text-gradient-brand">Horizon</span>
           </h2>
-          <p className="text-gray-600 text-md leading-relaxed">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
             Delivering unmatched service is what we live for. We create a culture of care and
             service where our customer comes first, ensuring excellence in every solution.
           </p>
-        </div>
+        </GsapReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {services.map((service) => (
             <ServiceCard
-              key={index}
+              key={service.name}
               icon={service.icon}
               name={service.name}
               description={service.description}
@@ -83,7 +136,7 @@ function Service() {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

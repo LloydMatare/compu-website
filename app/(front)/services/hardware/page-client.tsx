@@ -1,368 +1,354 @@
 'use client'
 
-import React, { useRef, useLayoutEffect } from 'react'
-import Hero from '../../_components/hero'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import Image from 'next/image'
+import Link from 'next/link'
+import React from 'react'
 import {
-  Server,
-  Cpu,
-  HardDrive,
-  Monitor,
-  Printer,
-  Network,
-  Laptop,
-  Smartphone,
-  Tablet,
   Camera,
   Cog,
+  Cpu,
+  HardDrive,
+  Laptop,
+  Monitor,
+  Network,
+  Printer,
+  Server,
+  Smartphone,
 } from 'lucide-react'
-import Link from 'next/link'
 import GsapReveal from '@/components/ui/gsap-reveal'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import LinkButton from '@/components/link-button'
 
-gsap.registerPlugin(ScrollTrigger)
+const hardwareCategories = [
+  {
+    icon: Server,
+    title: 'Servers & Storage',
+    description: 'Enterprise servers, NAS, SAN, and storage solutions',
+    features: ['Rack Servers', 'Tower Servers', 'Storage Arrays', 'Backup Systems'],
+  },
+  {
+    icon: Laptop,
+    title: 'Workstations & PCs',
+    description: 'High-performance computers for professionals and businesses',
+    features: ['Desktop Computers', 'All-in-One PCs', 'Thin Clients', 'Gaming Rigs'],
+  },
+  {
+    icon: HardDrive,
+    title: 'Storage Solutions',
+    description: 'Internal and external storage devices for all needs',
+    features: ['SSD/HDD', 'External Drives', 'RAID Systems', 'Cloud Storage'],
+  },
+  {
+    icon: Monitor,
+    title: 'Displays & Monitors',
+    description: 'Professional displays for various applications',
+    features: ['4K Monitors', 'UltraWide Screens', 'Digital Signage', 'Video Walls'],
+  },
+  {
+    icon: Printer,
+    title: 'Printing Solutions',
+    description: 'Network printers and multifunction devices',
+    features: ['Laser Printers', 'Inkjet Printers', 'Multifunction', 'Plotters'],
+  },
+  {
+    icon: Network,
+    title: 'Networking Equipment',
+    description: 'Routers, switches, and wireless infrastructure',
+    features: ['Enterprise Routers', 'Switches', 'Access Points', 'Firewalls'],
+  },
+  {
+    icon: Smartphone,
+    title: 'Mobile Devices',
+    description: 'Smartphones, tablets, and mobile accessories',
+    features: ['Business Phones', 'Tablets', 'Mobile Accessories', 'Rugged Devices'],
+  },
+  {
+    icon: Cpu,
+    title: 'Components & Upgrades',
+    description: 'Internal components and upgrade solutions',
+    features: ['Processors', 'Memory', 'Graphics Cards', 'Motherboards'],
+  },
+  {
+    icon: Camera,
+    title: 'Peripherals & Accessories',
+    description: 'Essential accessories for complete setups',
+    features: ['Keyboards & Mice', 'Webcams', 'Headsets', 'Docking Stations'],
+  },
+]
+
+const brands = [
+  'Dell',
+  'HP',
+  'Lenovo',
+  'Cisco',
+  'IBM',
+  'Apple',
+  'Samsung',
+  'Epson',
+  'Canon',
+  'APC',
+  'Intel',
+  'AMD',
+]
+
+const hardwareServices = [
+  {
+    icon: Cpu,
+    title: 'Procurement & Sourcing',
+    description:
+      'Source the right hardware from trusted manufacturers at competitive prices',
+  },
+  {
+    icon: Server,
+    title: 'Installation & Setup',
+    description: 'Professional installation and configuration of all hardware components',
+  },
+  {
+    icon: Cog,
+    title: 'Maintenance & Support',
+    description: 'Ongoing maintenance, repairs, and technical support for your hardware',
+  },
+]
 
 function Hardware() {
-  const categoriesGridRef = useRef<HTMLDivElement>(null)
-  const brandsGridRef = useRef<HTMLDivElement>(null)
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const catContainer = categoriesGridRef.current
-      if (catContainer) {
-        const catEls = catContainer.querySelectorAll('[data-reveal]')
-        if (catEls.length) {
-          gsap.fromTo(
-            catEls,
-            { y: 40, autoAlpha: 0 },
-            {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.9,
-              ease: 'power3.out',
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: catContainer,
-                start: 'top 85%',
-              },
-            }
-          )
-        }
-      }
-
-      const brandContainer = brandsGridRef.current
-      if (brandContainer) {
-        const brandEls = brandContainer.querySelectorAll('[data-reveal]')
-        if (brandEls.length) {
-          gsap.fromTo(
-            brandEls,
-            { autoAlpha: 0, scale: 0.85 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.6,
-              ease: 'power3.out',
-              stagger: 0.06,
-              scrollTrigger: {
-                trigger: brandContainer,
-                start: 'top 85%',
-              },
-            }
-          )
-        }
-      }
-    })
-
-    return () => ctx.revert()
-  }, [])
-
-  const hardwareCategories = [
-    {
-      icon: <Server className="h-8 w-8" />,
-      title: 'Servers & Storage',
-      description: 'Enterprise servers, NAS, SAN, and storage solutions',
-      features: ['Rack Servers', 'Tower Servers', 'Storage Arrays', 'Backup Systems'],
-      image: '/images/servers.jpg',
-    },
-    {
-      icon: <Laptop className="h-8 w-8" />,
-      title: 'Workstations & PCs',
-      description: 'High-performance computers for professionals and businesses',
-      features: ['Desktop Computers', 'All-in-One PCs', 'Thin Clients', 'Gaming Rigs'],
-      image: '/images/workstations.jpg',
-    },
-    {
-      icon: <HardDrive className="h-8 w-8" />,
-      title: 'Storage Solutions',
-      description: 'Internal and external storage devices for all needs',
-      features: ['SSD/HDD', 'External Drives', 'RAID Systems', 'Cloud Storage'],
-      image: '/images/storage.jpg',
-    },
-    {
-      icon: <Monitor className="h-8 w-8" />,
-      title: 'Displays & Monitors',
-      description: 'Professional displays for various applications',
-      features: ['4K Monitors', 'UltraWide Screens', 'Digital Signage', 'Video Walls'],
-      image: '/images/displays.jpg',
-    },
-    {
-      icon: <Printer className="h-8 w-8" />,
-      title: 'Printing Solutions',
-      description: 'Network printers and multifunction devices',
-      features: ['Laser Printers', 'Inkjet Printers', 'Multifunction', 'Plotters'],
-      image: '/images/printers.jpg',
-    },
-    {
-      icon: <Network className="h-8 w-8" />,
-      title: 'Networking Equipment',
-      description: 'Routers, switches, and wireless infrastructure',
-      features: ['Enterprise Routers', 'Switches', 'Access Points', 'Firewalls'],
-      image: '/images/networking-equipment.jpg',
-    },
-    {
-      icon: <Smartphone className="h-8 w-8" />,
-      title: 'Mobile Devices',
-      description: 'Smartphones, tablets, and mobile accessories',
-      features: ['Business Phones', 'Tablets', 'Mobile Accessories', 'Rugged Devices'],
-      image: '/images/mobile-devices.jpg',
-    },
-    {
-      icon: <Cpu className="h-8 w-8" />,
-      title: 'Components & Upgrades',
-      description: 'Internal components and upgrade solutions',
-      features: ['Processors', 'Memory', 'Graphics Cards', 'Motherboards'],
-      image: '/images/components.jpg',
-    },
-    {
-      icon: <Camera className="h-8 w-8" />,
-      title: 'Peripherals & Accessories',
-      description: 'Essential accessories for complete setups',
-      features: ['Keyboards & Mice', 'Webcams', 'Headsets', 'Docking Stations'],
-      image: '/images/peripherals.jpg',
-    },
-  ]
-
-  const brands = [
-    'Dell',
-    'HP',
-    'Lenovo',
-    'Cisco',
-    'IBM',
-    'Apple',
-    'Samsung',
-    'Epson',
-    'Canon',
-    'APC',
-    'Intel',
-    'AMD',
-  ]
-
   return (
     <div>
-      <Hero
-        backImage="hardware.jpg"
-        image=""
-        title="Hardware Solutions"
-        subtitle="Reliable IT Infrastructure from Leading Manufacturers"
-      />
-
-      <div className="container mx-auto px-4 py-16">
-        {/* Main Hardware Overview */}
-        <GsapReveal
-          className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16"
-        >
-          <div>
-            <h1 className="text-lg md:text-4xl font-bold text-gray-800 mb-6">
-              Enterprise <span className="text-blue-600">Hardware</span> Solutions
-            </h1>
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Hardware refers to the external and internal devices and equipment that enable you to
-              perform major functions such as input, output, storage, communication, processing, and
-              more. We provide comprehensive hardware solutions from leading manufacturers.
-            </p>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              External hardware devices include monitors, keyboards, printers, and scanners, while
-              internal hardware devices include motherboards, hard drives, RAM, and processors. Our
-              solutions ensure reliability, performance, and compatibility for your business needs.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/contact?service=hardware-consultation">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Get Hardware Consultation
-                </Button>
-              </Link>
-              <Link href="/contact?service=hardware-quote">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  Request Quote
-                </Button>
-              </Link>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <img
-              src="/images/hardware.jpeg"
-              alt="Enterprise Hardware Solutions"
-              className="rounded-2xl shadow-2xl w-full max-w-lg"
-            />
-          </div>
-        </GsapReveal>
-
-        {/* Hardware Categories Grid */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Hardware Categories</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Comprehensive range of hardware solutions for every business need
-            </p>
-          </div>
-          <div ref={categoriesGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {hardwareCategories.map((category, index) => (
-              <div
-                key={index}
-                data-reveal
-                style={{ opacity: 0 }}
-              >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:border-blue-300 border-2 group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-3 bg-blue-100 rounded-xl group-hover:bg-blue-200 transition-colors">
-                        <div className="text-blue-600">{category.icon}</div>
-                      </div>
-                    </div>
-                    <CardTitle className="text-xl mb-3">{category.title}</CardTitle>
-                    <p className="text-gray-600 text-sm">{category.description}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 mb-4">
-                      {category.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                          <span className="text-sm text-gray-600">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Link
-                      href={`/contact?category=${category.title.toLowerCase().replace(/\s+/g, '-')}`}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      >
-                        Inquire About {category.title}
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
+      <section className="relative overflow-hidden border-b border-border/60">
+        <div className="absolute inset-0" aria-hidden="true">
+          <Image
+            src="/images/hardware.jpg"
+            alt=""
+            fill
+            className="object-cover object-center"
+            priority
+            quality={90}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/45" />
+          <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+          <div className="pointer-events-none absolute -top-32 left-1/4 h-80 w-80 rounded-full bg-primary/20 blur-3xl animate-pulse-glow" />
         </div>
 
-        {/* Trusted Brands Section */}
-        <div className="bg-gray-50 rounded-2xl p-12 mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Trusted Hardware Partners</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              We partner with leading hardware manufacturers to provide you with reliable,
-              high-performance solutions
-            </p>
+        <div className="container relative mx-auto px-4">
+          <div className="grid items-center gap-10 py-16 md:py-20 lg:grid-cols-12 lg:py-24">
+            <div className="space-y-6 lg:col-span-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                Reliable IT Infrastructure
+              </p>
+              <h1 className="font-display text-3xl font-bold leading-[1.1] tracking-tight text-foreground md:text-4xl lg:text-6xl">
+                Hardware <span className="text-gradient-brand">Solutions</span>
+              </h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+                Hardware refers to the external and internal devices and equipment that enable you
+                to perform major functions such as input, output, storage, communication and
+                processing. We provide comprehensive hardware solutions from leading manufacturers.
+              </p>
+
+              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                <LinkButton
+                  link="/contact?service=hardware-consultation"
+                  className="rounded-full px-6 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+                >
+                  Get Hardware Consultation
+                </LinkButton>
+                <LinkButton
+                  link="/contact?service=hardware-quote"
+                  variant="outline"
+                  className="rounded-full border-border/70 bg-card/50 px-6 font-semibold backdrop-blur-sm hover:border-brand/40"
+                >
+                  Request Quote
+                </LinkButton>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 shadow-[0_0_60px_-30px_var(--glow)]">
+                <div className="relative aspect-[16/9] w-full">
+                  <Image
+                    src="/images/hardware.jpeg"
+                    alt="Enterprise hardware supplied by Compulink Systems"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div ref={brandsGridRef} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center">
-            {brands.map((brand, index) => (
+        </div>
+      </section>
+
+      {/* Hardware categories */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Hardware Categories
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Every device your <span className="text-gradient-brand">business runs on</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              A comprehensive range of hardware solutions for every business need, sourced,
+              deployed and supported by our engineers.
+            </p>
+          </GsapReveal>
+
+          <GsapReveal
+            childrenSelector="[data-hardware-card]"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {hardwareCategories.map((category) => (
+              <div key={category.title} data-hardware-card>
+                <article className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/50 p-6 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_0_40px_-12px_var(--glow)]">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand transition-transform duration-500 ease-out-expo group-hover:scale-105">
+                    <category.icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+
+                  <h3 className="mt-5 font-display text-lg font-bold text-foreground">
+                    {category.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {category.description}
+                  </p>
+
+                  <ul className="mt-5 flex-grow space-y-2">
+                    {category.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-center gap-2.5 text-sm text-foreground/90"
+                      >
+                        <span
+                          className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                          aria-hidden="true"
+                        />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    href={`/contact?category=${category.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="mt-5 inline-flex items-center text-sm font-semibold text-brand transition-colors hover:text-brand/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    Inquire About {category.title}
+                  </Link>
+                </article>
+              </div>
+            ))}
+          </GsapReveal>
+        </div>
+      </section>
+
+      {/* Trusted brands */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-surface/30 py-16 lg:py-20">
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Trusted Hardware Partners
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Leading brands, <span className="text-gradient-brand">expertly supplied</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              We partner with leading hardware manufacturers to provide you with reliable,
+              high-performance solutions.
+            </p>
+          </GsapReveal>
+
+          <GsapReveal
+            childrenSelector="[data-brand]"
+            className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 md:grid-cols-4 lg:grid-cols-6"
+          >
+            {brands.map((brand) => (
               <div
-                key={index}
-                data-reveal
-                style={{ opacity: 0 }}
-                className="text-gray-500 hover:text-gray-700 transition-colors duration-300 font-semibold text-lg"
+                key={brand}
+                data-brand
+                className="bg-card/70 px-4 py-6 text-center font-display text-sm font-semibold text-muted-foreground backdrop-blur-sm transition-colors duration-300 hover:text-foreground md:text-base"
               >
                 {brand}
               </div>
             ))}
-          </div>
+          </GsapReveal>
         </div>
+      </section>
 
-        {/* Services Section */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Hardware Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              End-to-end hardware solutions from procurement to maintenance
+      {/* Hardware services */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Hardware Services
             </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="p-3 bg-green-100 rounded-full w-fit mx-auto mb-4">
-                  <Cpu className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle>Procurement & Sourcing</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Source the right hardware from trusted manufacturers at competitive prices
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="p-3 bg-blue-100 rounded-full w-fit mx-auto mb-4">
-                  <Server className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle>Installation & Setup</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Professional installation and configuration of all hardware components
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="p-3 bg-orange-100 rounded-full w-fit mx-auto mb-4">
-                  <Cog className="h-6 w-6 text-orange-600" />
-                </div>
-                <CardTitle>Maintenance & Support</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Ongoing maintenance, repairs, and technical support for your hardware
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              From procurement to <span className="text-gradient-brand">maintenance</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              End-to-end hardware solutions delivered by engineers who install, configure and
+              maintain the kit they sell.
+            </p>
+          </GsapReveal>
 
-        {/* CTA Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Ready to Upgrade Your Hardware?</h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto text-lg">
-            Let our hardware specialists help you choose, procure, and implement the right hardware
-            solutions for your business needs.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/contact?service=hardware-assessment">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+          <GsapReveal
+            childrenSelector="[data-hardware-service]"
+            className="grid grid-cols-1 gap-6 md:grid-cols-3"
+          >
+            {hardwareServices.map((service) => (
+              <div
+                key={service.title}
+                data-hardware-service
+                className="rounded-2xl border border-border/60 bg-card/50 p-6 text-center transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-brand/40"
+              >
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand">
+                  <service.icon className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <h3 className="mt-5 font-display text-lg font-bold text-foreground">
+                  {service.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {service.description}
+                </p>
+              </div>
+            ))}
+          </GsapReveal>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-background py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
+        <div className="container relative mx-auto px-4">
+          <GsapReveal className="mx-auto max-w-3xl rounded-3xl border border-border/60 bg-card/50 p-8 text-center shadow-[0_0_80px_-40px_var(--glow)] backdrop-blur-xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Get Started
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-4xl">
+              Ready to <span className="text-gradient-brand">upgrade</span> your hardware?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Let our hardware specialists help you choose, procure and implement the right hardware
+              solutions for your business needs.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <LinkButton
+                link="/contact?service=hardware-assessment"
+                className="rounded-full px-8 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+              >
                 Free Hardware Assessment
-              </Button>
-            </Link>
-            <Link href="/contact?type=consultation">
-              <Button
-                size="lg"
+              </LinkButton>
+              <LinkButton
+                link="/booking-meeting"
                 variant="outline"
-                className="border-white text-white hover:bg-blue-500"
+                className="rounded-full border-border/70 bg-card/50 px-8 font-semibold backdrop-blur-sm hover:border-brand/40"
               >
                 Schedule Consultation
-              </Button>
-            </Link>
-          </div>
+              </LinkButton>
+            </div>
+          </GsapReveal>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

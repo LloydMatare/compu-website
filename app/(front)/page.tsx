@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Parnters from './_components/partners'
+import Partners from './_components/partners'
 import About from './_components/about'
 import Work from './_components/work'
 import Service from './_components/service'
@@ -7,7 +7,6 @@ import Testimonials from './_components/testimonials'
 import HomeCarousel from './_components/carousel'
 import Promotion from './_components/promotions'
 import Hero from './_components/hero'
-import Chatbot from './_components/chatbot'
 
 export const metadata: Metadata = {
   title: 'IT Solutions & Services in Zimbabwe | Cloud, Cybersecurity, Software',
@@ -22,18 +21,23 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div>
-      <Hero backImage={'web3.webp'} image={''} />
-      <div className="">
-        <Parnters />
-        <About />
-        <Work />
-        <Service />
-        <Testimonials />
-        <HomeCarousel />
-        <Promotion />
-        <Chatbot />
-      </div>
+    <div className="flex flex-col">
+      <Hero
+        backImage="web3.webp"
+        image=""
+        primaryButtonText="Explore Our Services"
+        primaryButtonLink="/services"
+        secondaryButtonText="Speak to Sales"
+        secondaryButtonLink="/contact"
+      />
+
+      <Partners />
+      <About />
+      <Work />
+      <Service />
+      <Testimonials />
+      <HomeCarousel />
+      <Promotion />
     </div>
   )
 }

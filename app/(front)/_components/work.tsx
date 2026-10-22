@@ -1,34 +1,34 @@
 import React from 'react'
 import SmallCard from './smallCard'
+import GsapReveal from '@/components/ui/gsap-reveal'
 import LinkButton from '@/components/link-button'
-import { Download, LockIcon, Network, Shield, Cloud, Code } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Cloud, Code, Network, Shield } from 'lucide-react'
 
 function Work() {
   const features = [
     {
-      icon: <Shield className="text-blue-600" />,
+      icon: <Shield className="h-5 w-5 text-brand" />,
       name: 'Cyber Security',
       description:
         'Ransomware Prevention Kit - Prevent, detect and restore with advanced security measures.',
       link: 'cyber-security',
     },
     {
-      icon: <Network className="text-blue-600" />,
+      icon: <Network className="h-5 w-5 text-brand" />,
       name: 'Networking',
       description:
         'Computer networking enables employees to share ideas more easily and work more efficiently.',
       link: 'networks',
     },
     {
-      icon: <Cloud className="text-blue-600" />,
+      icon: <Cloud className="h-5 w-5 text-brand" />,
       name: 'Cloud Computing',
       description:
         'Allows organizations to scale, maintain flexibility, and focus their efforts on business operations.',
       link: 'cloud-computing',
     },
     {
-      icon: <Code className="text-blue-600" />,
+      icon: <Code className="h-5 w-5 text-brand" />,
       name: 'Software Development',
       description:
         'Offering custom software services and solutions tailored to every business scale.',
@@ -37,48 +37,63 @@ function Work() {
   ]
 
   return (
-    <div className="relative bg-[url('/images/banner.jpg')] bg-cover bg-center bg-fixed">
-      <div className="bg-blue-950/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="flex flex-col items-start">
-              <h1 className="text-blue-400 uppercase font-semibold tracking-wider text-lg mb-4">
-                Why Choose Us
-              </h1>
-              <h2 className="text-white text-lg md:text-4xl font-bold leading-tight mb-6">
-                Technical Features From <span className="text-blue-400">COMPU</span>
-                <span className="text-red-500">LINK</span>
-              </h2>
-              <p className="text-gray-300 text-md leading-relaxed mb-8 max-w-lg">
-                A world-class Information System Integration House, offering solid solutions backed
-                by service excellence that exceeds customer expectations.
-              </p>
-              <div className="flex gap-4">
-                <LinkButton link="/about" name="Read More" />
-                <Button
-                  variant={'outline'}
-                  className="border-2 border-white text-black hover:bg-white hover:text-blue-900 transition-all duration-300 rounded-lg font-medium"
-                >
-                  Contact Us
-                </Button>
-              </div>
-            </div>
+    <section className="relative overflow-hidden border-y border-border/60">
+      <div
+        className="absolute inset-0 bg-[url('/images/banner.jpg')] bg-cover bg-center bg-fixed"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/60 backdrop-blur-sm"
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {features.map((feature, index) => (
-                <SmallCard
-                  key={index}
-                  icon={feature.icon}
-                  name={feature.name}
-                  description={feature.description}
-                  link={feature.link}
-                />
+      <div className="container relative mx-auto px-4 py-16 lg:py-24">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <GsapReveal>
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Why Choose Us
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold leading-tight md:text-4xl">
+              Technical Features From <span className="text-gradient-brand">COMPULINK</span>
+            </h2>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
+              A world-class Information System Integration House, offering solid solutions backed
+              by service excellence that exceeds customer expectations.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <LinkButton
+                link="/about"
+                name="Read More"
+                className="rounded-full px-6 font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+              />
+              <LinkButton
+                link="/contact"
+                name="Contact Us"
+                variant="outline"
+                className="rounded-full border-border/70 bg-card/50 px-6 font-semibold backdrop-blur-sm hover:border-brand/40"
+              />
+            </div>
+          </GsapReveal>
+
+          <GsapReveal delay={0.12} childrenSelector="[data-work-card]">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {features.map((feature) => (
+                <div key={feature.name} data-work-card>
+                  <SmallCard
+                    icon={feature.icon}
+                    name={feature.name}
+                    description={feature.description}
+                    link={feature.link}
+                  />
+                </div>
               ))}
             </div>
-          </div>
+          </GsapReveal>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

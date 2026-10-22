@@ -1,8 +1,6 @@
 'use client'
-import dynamic from 'next/dynamic'
 import React, { useRef } from 'react'
-import { Mail, Home, Phone, MapPin, Clock, Building } from 'lucide-react'
-import { useLoadScript } from '@react-google-maps/api'
+import { Home, Phone, MapPin, Clock } from 'lucide-react'
 import gsap from 'gsap'
 import Maps from './maps'
 import { Card, CardContent } from '@/components/ui/card'
@@ -50,21 +48,6 @@ const Info = ({ icon, title, info1, info2, badge }: any) => {
 }
 
 function ContactMap() {
-  const { isLoaded } = useLoadScript({
-    //@ts-ignore
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  })
-
-  if (!isLoaded)
-    return (
-      <div className="h-[600px] w-full bg-gray-100 rounded-2xl flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading map...</p>
-        </div>
-      </div>
-    )
-
   return (
     <div className="relative h-[600px] w-full my-8 rounded-2xl overflow-hidden shadow-2xl">
       {/* Map Background */}

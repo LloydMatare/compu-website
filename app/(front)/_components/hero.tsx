@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button'
-import { ChevronRight, ArrowRight, Star } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { ChevronRight, ArrowRight, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import React from 'react'
+import LinkButton from '@/components/link-button'
 
 interface HeroProps {
-  backImage: string
+  backImage?: string
   image?: string
   title?: string
   subtitle?: string
@@ -22,6 +22,22 @@ interface HeroProps {
   height?: 'small' | 'medium' | 'large' | 'full'
 }
 
+const heroStats = [
+  { value: '30+', label: 'Years Experience' },
+  { value: '500+', label: 'Projects Completed' },
+  { value: '99%', label: 'Client Satisfaction' },
+  { value: '24/7', label: 'Support Available' },
+]
+
+const trustedIndustries = [
+  'CABS',
+  'Old Mutual',
+  'Government',
+  'Healthcare',
+  'Education',
+  'Finance',
+]
+
 function Hero({
   backImage,
   image,
@@ -34,182 +50,193 @@ function Hero({
   secondaryButtonLink = '/contact',
   showStats = true,
   showBadge = true,
-  badgeText = 'Innovation & Excellence',
+  badgeText = 'Leading IT Solutions Provider in Zimbabwe',
   overlayIntensity = 'medium',
   textAlign = 'left',
   height = 'large',
 }: HeroProps) {
-  // Height mappings
   const heightClasses = {
-    small: 'h-[400px] md:h-[450px]',
-    medium: 'h-[500px] md:h-[550px]',
-    large: 'h-[600px] md:h-[650px] lg:h-[700px]',
+    small: 'h-[420px] md:h-[460px]',
+    medium: 'h-[520px] md:h-[560px]',
+    large: 'h-[600px] md:h-[660px] lg:h-[720px]',
     full: 'min-h-screen',
   }
 
-  // Overlay intensity mappings
-  const overlayClasses = {
-    light: 'bg-gradient-to-r from-blue-900/70 via-blue-900/50 to-blue-900/30',
-    medium: 'bg-gradient-to-r from-blue-900/80 via-blue-900/60 to-blue-900/40',
-    dark: 'bg-gradient-to-r from-blue-900/90 via-blue-900/70 to-blue-900/50',
+  // Theme-aware scrims: `background` is the page canvas, so the hero stays
+  // readable in both the dark (default) and light themes.
+  const sideOverlayClasses = {
+    light: 'from-background/70 via-background/50 to-background/25',
+    medium: 'from-background/90 via-background/70 to-background/40',
+    dark: 'from-background via-background/85 to-background/55',
   }
 
-  // Text alignment classes
+  const centerOverlayClasses = {
+    light: 'from-background/75 via-background/55 to-background/30',
+    medium: 'from-background/95 via-background/80 to-background/45',
+    dark: 'from-background via-background/95 to-background/70',
+  }
+
   const textAlignClasses = {
     left: 'text-left items-start',
-    center: 'text-center items-center',
+    center: 'text-center items-center mx-auto',
   }
 
+  const overlay =
+    textAlign === 'center'
+      ? centerOverlayClasses[overlayIntensity]
+      : sideOverlayClasses[overlayIntensity]
+
+  const titleWords = title.split(' ')
+
   return (
-    <div className={`relative w-full ${heightClasses[height]} overflow-hidden`}>
-      {/* Background Image with Overlay */}
+    <section
+      className={`relative w-full overflow-hidden ${heightClasses[height]}`}
+      aria-label={title}
+    >
+      {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src={`/images/${backImage}`}
-          alt="Hero background"
+          src={`/images/${backImage ?? 'class1.jpg'}`}
+          alt=""
           fill
           className="object-cover object-center"
           priority
           quality={90}
         />
-        {/* Dynamic overlay based on intensity */}
-        <div className={`absolute inset-0 ${overlayClasses[overlayIntensity]}`} />
+        <div className={`absolute inset-0 bg-gradient-to-r ${overlay}`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-background/40" />
+        <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+        <div className="pointer-events-none absolute -top-32 left-1/4 h-80 w-80 rounded-full bg-primary/20 blur-3xl animate-pulse-glow" />
       </div>
 
       {/* Content */}
-      <div className="relative h-full">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 h-full">
+      <div className="relative flex h-full w-full">
+        <div className="container mx-auto px-4">
           <div
-            className={`grid lg:grid-cols-12 gap-8 h-full items-center pt-20 md:pt-24 ${textAlignClasses[textAlign]}`}
+            className={`grid h-full items-center gap-10 pt-24 pb-16 md:pt-28 lg:grid-cols-12 lg:gap-8 lg:pb-0 ${textAlignClasses[textAlign]}`}
           >
-            {/* Text Content */}
             <div
-              className={`lg:col-span-7 space-y-6 text-white ${textAlign === 'center' ? 'mx-auto max-w-4xl' : ''}`}
+              className={`space-y-6 lg:col-span-7 ${textAlign === 'center' ? 'mx-auto max-w-4xl' : ''}`}
             >
-              {/* Badge */}
               {showBadge && (
-                <div className="inline-flex items-center gap-2 bg-blue-600/20 backdrop-blur-sm border border-blue-400/30 rounded-full px-4 py-2 text-sm">
+                <Badge
+                  variant="outline"
+                  className="h-auto gap-2 rounded-full border-brand/30 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand backdrop-blur-sm"
+                >
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
                   </span>
-                  <span className="font-medium">{badgeText}</span>
-                </div>
+                  {badgeText}
+                </Badge>
               )}
 
-              {/* Subtitle */}
               {subtitle && (
-                <p className="text-md md:text-lg text-blue-300 font-semibold uppercase tracking-wide">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand md:text-sm">
                   {subtitle}
                 </p>
               )}
 
-              {/* Main Title */}
-              <h1 className="text-lg md:text-2xl lg:text-6xl  font-bold leading-tight">
-                {title.split(' ').map((word, index, array) => (
-                  <span
-                    key={index}
-                    className={
-                      word.toLowerCase().includes('compulink') || index === array.length - 1
-                        ? 'text-blue-400'
-                        : ''
-                    }
-                  >
-                    {word}
-                    {index < array.length - 1 ? ' ' : ''}
-                  </span>
-                ))}
+              <h1 className="font-display text-3xl font-bold leading-[1.1] tracking-tight text-foreground md:text-4xl lg:text-6xl">
+                {titleWords.map((word, index) => {
+                  const isAccent =
+                    word.toLowerCase().includes('compulink') || index === titleWords.length - 1
+
+                  return (
+                    <span
+                      key={`${word}-${index}`}
+                      className={isAccent ? 'text-gradient-brand' : undefined}
+                    >
+                      {word}
+                      {index < titleWords.length - 1 ? ' ' : ''}
+                    </span>
+                  )
+                })}
               </h1>
 
-              {/* Description */}
               {description && (
                 <p
-                  className={`text-md md:text-lg text-gray-100 leading-relaxed ${textAlign === 'center' ? 'max-w-3xl mx-auto' : 'max-w-2xl'}`}
+                  className={`max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base ${
+                    textAlign === 'center' ? 'mx-auto max-w-3xl' : ''
+                  }`}
                 >
                   {description}
                 </p>
               )}
 
-              {/* CTA Buttons */}
-              <div
-                className={`flex flex-col sm:flex-row gap-4 pt-4 ${textAlign === 'center' ? 'justify-center' : ''}`}
-              >
-                {primaryButtonText && primaryButtonLink && (
-                  <Button
-                    asChild
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-base group"
-                  >
-                    <Link href={primaryButtonLink}>
-                      {primaryButtonText}
-                      <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                )}
-                {secondaryButtonText && secondaryButtonLink && (
-                  <Button
-                    asChild
-                    size="lg"
-                    variant="outline"
-                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 text-base"
-                  >
-                    <Link href={secondaryButtonLink}>
-                      {secondaryButtonText}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                )}
-              </div>
-
-              {/* Stats or Trust Indicators */}
-              {showStats && (
+              {(primaryButtonText || secondaryButtonText) && (
                 <div
-                  className={`flex flex-wrap gap-8 pt-8 ${textAlign === 'center' ? 'justify-center' : ''}`}
+                  className={`flex flex-col gap-3 pt-2 sm:flex-row ${
+                    textAlign === 'center' ? 'justify-center' : ''
+                  }`}
                 >
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">30+</div>
-                    <div className="text-sm text-gray-300">Years Experience</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">500+</div>
-                    <div className="text-sm text-gray-300">Projects Completed</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">99%</div>
-                    <div className="text-sm text-gray-300">Client Satisfaction</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">24/7</div>
-                    <div className="text-sm text-gray-300">Support Available</div>
-                  </div>
+                  {primaryButtonText && primaryButtonLink && (
+                    <LinkButton
+                      link={primaryButtonLink}
+                      size="lg"
+                      className="h-11 rounded-full px-6 text-sm font-semibold shadow-[0_0_40px_-12px_var(--glow)]"
+                    >
+                      {primaryButtonText}
+                      <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
+                    </LinkButton>
+                  )}
+                  {secondaryButtonText && secondaryButtonLink && (
+                    <LinkButton
+                      link={secondaryButtonLink}
+                      variant="outline"
+                      size="lg"
+                      className="h-11 rounded-full border-border/70 bg-card/50 px-6 text-sm font-semibold backdrop-blur-sm hover:border-brand/40"
+                    >
+                      {secondaryButtonText}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </LinkButton>
+                  )}
                 </div>
               )}
 
-              {/* Trust Badges */}
+              {showStats && (
+                <div
+                  className={`grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 sm:grid-cols-4 ${
+                    textAlign === 'center' ? 'mx-auto' : ''
+                  }`}
+                >
+                  {heroStats.map((stat) => (
+                    <div key={stat.label} className="bg-card/70 px-4 py-5 backdrop-blur-sm">
+                      <p className="font-display text-2xl font-bold text-gradient-brand md:text-3xl">
+                        {stat.value}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {textAlign === 'center' && (
-                <div className="pt-8 border-t border-white/20">
-                  <p className="text-sm text-gray-300 mb-4">Trusted by industry leaders</p>
-                  <div className="flex flex-wrap justify-center gap-6 opacity-80">
-                    {['CABS', 'Old Mutual', 'Government', 'Healthcare', 'Education', 'Finance'].map(
-                      (industry) => (
-                        <div key={industry} className="flex items-center gap-1 text-white/70">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm">{industry}</span>
-                        </div>
-                      ),
-                    )}
+                <div className="w-full max-w-3xl border-t border-border/60 pt-6">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Trusted by industry leaders
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                    {trustedIndustries.map((industry) => (
+                      <span
+                        key={industry}
+                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <Sparkles className="h-3 w-3 text-brand" />
+                        {industry}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Image (Optional) */}
             {image && (
-              <div className="hidden lg:flex lg:col-span-5 items-center justify-center">
-                <div className="relative w-full h-52 md:h-96 xl:h-[500px]">
+              <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-center">
+                <div className="relative h-52 w-full md:h-96 xl:h-[480px]">
                   <Image
                     src={image}
-                    alt="Hero image"
+                    alt="Compulink solution illustration"
                     fill
                     className="object-contain drop-shadow-2xl"
                     priority
@@ -221,22 +248,16 @@ function Hero({
         </div>
       </div>
 
-      {/* Bottom Fade (only for non-full height) */}
-      {height !== 'full' && (
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
-      )}
-
-      {/* Scroll Indicator (for full height) */}
+      {/* Scroll indicator (full height only) */}
       {height === 'full' && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <div className="animate-bounce">
-            <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
-            </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+          <div className="flex h-10 w-6 animate-bounce justify-center rounded-full border-2 border-border/70">
+            <div className="mt-2 h-3 w-1 rounded-full bg-brand" />
           </div>
         </div>
       )}
-    </div>
+
+      </section>
   )
 }
 

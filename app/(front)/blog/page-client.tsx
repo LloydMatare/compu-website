@@ -1,171 +1,138 @@
 'use client'
 
-import {
-  Archive,
-  ChevronRight,
-  Heart,
-  MessagesSquare,
-  Timer,
-  User,
-  Calendar,
-  Eye,
-} from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { BlogModal } from './_components/BlogModal'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import Link from 'next/link'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import type { Id } from '@/convex/_generated/dataModel'
+import { ArrowUpRight, Calendar, Eye, Heart, Search, Timer } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import Hero from '../_components/hero'
 import GsapReveal from '@/components/ui/gsap-reveal'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import posthog from 'posthog-js'
+import { cn } from '@/lib/utils'
 
-const isPostHogConfigured = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-)
+function formatDate(timestamp: number) {
+  return new Date(timestamp).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 
-gsap.registerPlugin(ScrollTrigger)
-
-interface BlogPost {
-  id: string
-  title: string
-  content: string
-  createdAt: string
-  image?: {
-    url?: string
+function PostCard({
+  post,
+  onLike,
+}: {
+  post: {
+    _id: Id<'posts'>
+    _creationTime: number
+    title: string
+    slug: string
+    excerpt?: string
+    content: string
+    coverImage: string | null
+    category: string
+    readTime?: string
+    author?: string
+    likes: number
+    views: number
   }
-  likes: number
-  views: number
-  category: string
-  readTime: string
-  comments?: { author: string; text: string; createdAt: string }[]
+  onLike: (id: Id<'posts'>) => void
+}) {
+  return (
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 transition-all hover:-translate-y-1 hover:border-brand/40">
+      <Link
+        href={`/blog/${post.slug}`}
+        className="relative block aspect-video overflow-hidden bg-muted"
+      >
+        {post.coverImage ? (
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+        ) : null}
+        <div className="absolute left-3 top-3">
+          <Badge variant="secondary">{post.category}</Badge>
+        </div>
+      </Link>
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5" />
+            {formatDate(post._creationTime)}
+          </span>
+          {post.readTime ? (
+            <span className="flex items-center gap-1.5">
+              <Timer className="h-3.5 w-3.5" />
+              {post.readTime}
+            </span>
+          ) : null}
+        </div>
+        <h3 className="mb-3 text-lg font-semibold leading-snug transition-colors group-hover:text-brand">
+          <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+        </h3>
+        <p className="mb-5 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {post.excerpt ?? post.content}
+        </p>
+        <div className="flex items-center justify-between border-t border-border/50 pt-4">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => onLike(post._id)}
+              className="flex items-center gap-1.5 transition-colors hover:text-rose-400"
+              aria-label="Like this post"
+            >
+              <Heart className="h-4 w-4" />
+              {post.likes}
+            </button>
+            <span className="flex items-center gap-1.5">
+              <Eye className="h-4 w-4" />
+              {post.views}
+            </span>
+          </div>
+          <Link
+            href={`/blog/${post.slug}`}
+            className="flex items-center gap-1 text-xs font-medium text-brand"
+          >
+            Read
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </div>
+    </article>
+  )
 }
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [commentText, setCommentText] = useState('')
-  const [loading, setLoading] = useState(true)
-  const gridRef = useRef<HTMLDivElement>(null)
+  const posts = useQuery(api.posts.list, { publishedOnly: true })
+  const toggleLike = useMutation(api.posts.toggleLike)
+  const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('All')
 
-  // Mock data for demonstration
-  useEffect(() => {
-    const mockPosts: BlogPost[] = [
-      {
-        id: '1',
-        title: 'The Future of Cloud Computing in Zimbabwe',
-        content:
-          'Exploring how cloud technology is transforming businesses across Zimbabwe and the opportunities it presents for digital transformation in various sectors including banking, healthcare, and education.',
-        createdAt: new Date().toISOString(),
-        image: { url: '/images/cloud-services.jpg' },
-        likes: 24,
-        views: 156,
-        category: 'Technology',
-        readTime: '5 min read',
-        comments: [
-          { author: 'John Doe', text: 'Great insights!', createdAt: new Date().toISOString() },
-          {
-            author: 'Jane Smith',
-            text: 'Looking forward to more articles like this.',
-            createdAt: new Date().toISOString(),
-          },
-        ],
-      },
-      {
-        id: '2',
-        title: 'Cybersecurity Trends for 2024',
-        content:
-          'An in-depth look at the emerging cybersecurity threats and the latest protection strategies that businesses should implement to safeguard their digital assets.',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        image: { url: '/images/cybersecurity-services.jpg' },
-        likes: 18,
-        views: 203,
-        category: 'Security',
-        readTime: '7 min read',
-      },
-      {
-        id: '3',
-        title: 'Digital Transformation Success Stories',
-        content:
-          'Case studies of successful digital transformation projects we have implemented for clients across different industries in Zimbabwe.',
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        image: { url: '/images/software-dev.jpg' },
-        likes: 32,
-        views: 189,
-        category: 'Business',
-        readTime: '6 min read',
-      },
-    ]
+  const categories = useMemo(
+    () => ['All', ...new Set((posts ?? []).map((post) => post.category))],
+    [posts]
+  )
 
-    setPosts(mockPosts)
-    setLoading(false)
-  }, [])
+  const filtered = useMemo(() => {
+    const needle = search.trim().toLowerCase()
+    return (posts ?? []).filter((post) => {
+      const matchesCategory = category === 'All' || post.category === category
+      const matchesSearch =
+        !needle ||
+        post.title.toLowerCase().includes(needle) ||
+        (post.excerpt ?? post.content).toLowerCase().includes(needle)
+      return matchesCategory && matchesSearch
+    })
+  }, [posts, search, category])
 
-  useEffect(() => {
-    if (loading || !gridRef.current) return
-
-    const container = gridRef.current
-    const cards = container.querySelectorAll('[data-reveal]')
-    if (cards.length === 0) return
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        cards,
-        { y: 40, autoAlpha: 0 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: container,
-            start: 'top 85%',
-          },
-        },
-      )
-    }, container)
-
-    return () => ctx.revert()
-  }, [loading])
-
-  const handleLike = async (id: string) => {
-    if (isPostHogConfigured) {
-      posthog.capture('blog_post_liked')
-    }
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => (post.id === id ? { ...post, likes: post.likes + 1 } : post)),
-    )
-  }
-
-  const handleCommentSubmit = async (id: string) => {
-    if (!commentText.trim()) return
-
-    const newComment = {
-      author: 'You',
-      text: commentText,
-      createdAt: new Date().toISOString(),
-    }
-
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === id ? { ...post, comments: [...(post.comments || []), newComment] } : post,
-      ),
-    )
-
-    setCommentText('')
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  const [featuredPost, ...latestPosts] = posts
+  const [featured, ...rest] = filtered
 
   return (
     <div>
@@ -177,163 +144,130 @@ export default function BlogPage() {
       />
 
       <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <GsapReveal
-          className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12"
-        >
+        <GsapReveal className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-lg md:text-4xl font-bold text-gray-800 mb-4">
-              Latest <span className="text-blue-600">Insights</span>
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              Knowledge Hub
+            </p>
+            <h1 className="mt-3 text-3xl font-bold md:text-4xl">
+              Latest <span className="text-gradient-brand">Insights</span>
             </h1>
-            <p className="text-md md:text-lg text-gray-600 max-w-2xl">
-              Stay updated with the latest technology trends, company news, and industry insights
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              Stay updated with the latest technology trends, company news and industry insights
               from Compulink Systems.
             </p>
           </div>
-          <BlogModal />
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search articles..."
+              className="pl-9"
+            />
+          </div>
         </GsapReveal>
 
-        {/* Featured Post */}
-        {featuredPost && (
-          <GsapReveal delay={0.15} className="mb-16">
-            <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 border-2">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="relative aspect-video lg:aspect-auto">
-                  <Image
-                    src={featuredPost.image?.url || '/images/blog-placeholder.jpg'}
-                    alt={featuredPost.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-blue-600 hover:bg-blue-700 text-white">Featured</Badge>
-                  </div>
-                </div>
-                <div className="p-8 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                      <Badge variant="outline">{featuredPost.category}</Badge>
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        <span>{new Date(featuredPost.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Timer size={14} />
-                        <span>{featuredPost.readTime}</span>
-                      </div>
-                    </div>
-                    <h2 className="text-lg md:text-3xl font-bold text-gray-800 mb-4">
-                      {featuredPost.title}
-                    </h2>
-                    <p className="text-gray-600 leading-relaxed mb-6 text-sm md:text-lg">
-                      {featuredPost.content}
-                    </p>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
-                    <div className="flex items-center gap-6 text-gray-500">
-                      <button
-                        onClick={() => handleLike(featuredPost.id)}
-                        className="flex items-center gap-2 hover:text-red-600 transition-colors"
-                      >
-                        <Heart size={18} />
-                        <span>{featuredPost.likes}</span>
-                      </button>
-                      <div className="flex items-center gap-2">
-                        <Eye size={18} />
-                        <span>{featuredPost.views}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MessagesSquare size={18} />
-                        <span>{featuredPost.comments?.length || 0}</span>
-                      </div>
-                    </div>
-                    <Button className="bg-blue-600 hover:bg-blue-700 group">
-                      Read More
-                      <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </GsapReveal>
-        )}
+        <div className="mb-10 flex flex-wrap gap-2">
+          {categories.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setCategory(item)}
+              className={cn(
+                'rounded-full border px-4 py-1.5 text-xs font-medium transition-colors',
+                category === item
+                  ? 'border-brand bg-brand/10 text-brand'
+                  : 'border-border/60 text-muted-foreground hover:border-brand/40 hover:text-foreground'
+              )}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
 
-        {/* Latest Articles */}
-        <GsapReveal delay={0.3}>
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-lg md:text-3xl font-bold text-gray-800">Latest Articles</h2>
+        {posts === undefined ? (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-80 rounded-2xl" />
+            ))}
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border/60 py-20 text-center">
+            <p className="text-muted-foreground">No articles match your filters yet.</p>
+          </div>
+        ) : (
+          <>
+            {featured ? (
+              <GsapReveal className="mb-16">
+                <Link
+                  href={`/blog/${featured.slug}`}
+                  className="group grid overflow-hidden rounded-3xl border border-border/60 bg-card/50 lg:grid-cols-2"
+                >
+                  <div className="relative aspect-video overflow-hidden bg-muted lg:aspect-auto">
+                    {featured.coverImage ? (
+                      <Image
+                        src={featured.coverImage}
+                        alt={featured.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        priority
+                      />
+                    ) : null}
+                    <Badge className="absolute left-4 top-4 bg-brand text-brand-foreground">
+                      Featured
+                    </Badge>
+                  </div>
+                  <div className="flex flex-col justify-between p-8 lg:p-10">
+                    <div>
+                      <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                        <Badge variant="outline">{featured.category}</Badge>
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {formatDate(featured._creationTime)}
+                        </span>
+                        {featured.readTime ? (
+                          <span className="flex items-center gap-1.5">
+                            <Timer className="h-3.5 w-3.5" />
+                            {featured.readTime}
+                          </span>
+                        ) : null}
+                      </div>
+                      <h2 className="text-2xl font-bold leading-tight transition-colors group-hover:text-brand md:text-3xl">
+                        {featured.title}
+                      </h2>
+                      <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-muted-foreground md:text-base">
+                        {featured.excerpt ?? featured.content}
+                      </p>
+                    </div>
+                    <div className="mt-8 flex items-center justify-between border-t border-border/50 pt-5">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>{featured.author ?? 'Compulink Team'}</span>
+                        <span className="flex items-center gap-1.5">
+                          <Eye className="h-4 w-4" />
+                          {featured.views}
+                        </span>
+                      </div>
+                      <span className="flex items-center gap-1 text-sm font-medium text-brand">
+                        Read article
+                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </GsapReveal>
+            ) : null}
 
-          {latestPosts.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-600">No articles available at the moment.</p>
-            </div>
-          ) : (
-            <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {latestPosts.map((post) => (
-                <div key={post.id} data-reveal>
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 border-2 group">
-                    <CardHeader className="p-0">
-                      <div className="relative aspect-video overflow-hidden">
-                        <Image
-                          src={post.image?.url || '/images/blog-placeholder.jpg'}
-                          alt={post.title}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        <div className="absolute top-3 left-3">
-                          <Badge variant="secondary">{post.category}</Badge>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
-                        <div className="flex items-center gap-1">
-                          <User size={14} />
-                          <span>Compulink Team</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Timer size={14} />
-                          <span>{post.readTime}</span>
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-xl mb-3 text-gray-800 group-hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">{post.content}</p>
-                    </CardContent>
-                    <CardFooter className="p-6 pt-0">
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-4 text-gray-500 text-sm">
-                          <button
-                            onClick={() => handleLike(post.id)}
-                            className="flex items-center gap-1 hover:text-red-600 transition-colors"
-                          >
-                            <Heart size={16} />
-                            <span>{post.likes}</span>
-                          </button>
-                          <div className="flex items-center gap-1">
-                            <MessagesSquare size={16} />
-                            <span>{post.comments?.length || 0}</span>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          Read More
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
+            <GsapReveal className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {rest.map((post) => (
+                <div key={post._id}>
+                  <PostCard post={post} onLike={(id) => void toggleLike({ id })} />
                 </div>
               ))}
-            </div>
-          )}
-        </GsapReveal>
+            </GsapReveal>
+          </>
+        )}
       </div>
     </div>
   )
