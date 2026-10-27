@@ -3,6 +3,7 @@ import { ChevronRight, ArrowRight, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import LinkButton from '@/components/link-button'
+import { Hero3D } from './hero-3d'
 
 interface HeroProps {
   backImage?: string
@@ -99,18 +100,21 @@ function Hero({
           src={`/images/${backImage ?? 'class1.jpg'}`}
           alt=""
           fill
-          className="object-cover object-center"
+          className="object-cover object-center scale-105"
           priority
           quality={90}
         />
         <div className={`absolute inset-0 bg-gradient-to-r ${overlay}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-background/40" />
         <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+        <div className="pointer-events-none absolute inset-0 tech-grid opacity-20" />
         <div className="pointer-events-none absolute -top-32 left-1/4 h-80 w-80 rounded-full bg-primary/20 blur-3xl animate-pulse-glow" />
+        <div className="pointer-events-none absolute -bottom-32 right-1/4 h-72 w-72 rounded-full bg-brand/15 blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
       </div>
 
       {/* Content */}
       <div className="relative flex h-full w-full">
+        <Hero3D />
         <div className="container mx-auto px-4">
           <div
             className={`grid h-full items-center gap-10 pt-24 pb-16 md:pt-28 lg:grid-cols-12 lg:gap-8 lg:pb-0 ${textAlignClasses[textAlign]}`}
@@ -121,7 +125,7 @@ function Hero({
               {showBadge && (
                 <Badge
                   variant="outline"
-                  className="h-auto gap-2 rounded-full border-brand/30 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand backdrop-blur-sm"
+                  className="h-auto gap-2 rounded-full border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand backdrop-blur-sm shadow-[0_0_40px_-16px_var(--brand)]"
                 >
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
@@ -196,12 +200,10 @@ function Hero({
 
               {showStats && (
                 <div
-                  className={`grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/60 bg-border/60 sm:grid-cols-4 ${
-                    textAlign === 'center' ? 'mx-auto' : ''
-                  }`}
+                  className={`grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-brand/30 bg-gradient-to-r from-brand/20 via-primary/10 to-brand/20 sm:grid-cols-4 shadow-[0_0_80px_-30px_var(--brand)]`}
                 >
                   {heroStats.map((stat) => (
-                    <div key={stat.label} className="bg-card/70 px-4 py-5 backdrop-blur-sm">
+                    <div key={stat.label} className="bg-card/70 px-4 py-5 backdrop-blur-sm transition-colors hover:bg-card/90">
                       <p className="font-display text-2xl font-bold text-gradient-brand md:text-3xl">
                         {stat.value}
                       </p>

@@ -15,6 +15,7 @@ import {
   Package,
   Quote,
   Settings,
+  Users,
   Wrench,
 } from 'lucide-react'
 import {
@@ -44,6 +45,7 @@ export const DASHBOARD_NAV = [
   { title: 'Partners', href: '/dashboard/partners', icon: Handshake },
   { title: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
   { title: 'Inbox', href: '/dashboard/inbox', icon: Inbox },
+  { title: 'Users', href: '/dashboard/users', icon: Users },
   { title: 'Settings', href: '/dashboard/settings', icon: Settings },
 ] as const
 

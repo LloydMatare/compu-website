@@ -65,6 +65,7 @@ function Networks() {
           <GsapReveal className="mx-auto mb-14 max-w-4xl">
             <ServiceTop
               image="net.webp"
+              animation="networking"
               title="Advanced Network Solutions"
               description="Comprehensive networking services that ensure reliable, secure and high-performance connectivity for your organisation."
               description2="From network design and implementation to ongoing management and security, we provide end-to-end solutions that keep your business connected and protected."

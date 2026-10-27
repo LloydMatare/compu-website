@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     'Custom software development services in Zimbabwe. Web and mobile apps, enterprise software, AI solutions, chatbots and API integration from Compulink Systems.',
 }
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Database, Globe, Smartphone } from 'lucide-react'
 import GsapReveal from '@/components/ui/gsap-reveal'
 import LinkButton from '@/components/link-button'
@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Hero from '../../_components/hero'
 import ServiceTop from '../../_components/serviceTop'
 import { SoftwareTabs } from './_components/softwareTabs'
+import GitHubProjects from './_components/github-projects'
 
 function Software() {
   const softwareServices = [
@@ -162,6 +163,20 @@ function Software() {
       </section>
 
       <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <GsapReveal className="mx-auto max-w-5xl">
+            <ServiceTop
+              image="ai.jpg"
+              animation="ai"
+              title="Intelligence built into your software"
+              description="Bring AI, data science and automation into the tools your team already uses."
+              description2="From conversational assistants to reporting and integration pipelines, we design AI features around practical business needs."
+            />
+          </GsapReveal>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden border-b border-border/60 bg-background py-16 lg:py-24">
         <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
         <div className="container relative mx-auto px-4">
           <GsapReveal className="mx-auto mb-10 max-w-3xl text-center">
@@ -176,7 +191,19 @@ function Software() {
             </p>
           </GsapReveal>
 
-          <SoftwareTabs />
+          <SoftwareTabs
+            projects={
+              <Suspense
+                fallback={
+                  <p role="status" className="py-8 text-sm text-muted-foreground">
+                    Loading GitHub projects…
+                  </p>
+                }
+              >
+                <GitHubProjects />
+              </Suspense>
+            }
+          />
         </div>
       </section>
 

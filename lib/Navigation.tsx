@@ -31,10 +31,6 @@ export const NAV_LINKS: NavLink[] = [
     href: '/portfolio',
   },
   {
-    name: 'Catalog',
-    href: '/catalog',
-  },
-  {
     name: 'Gallery',
     href: '/gallery',
   },

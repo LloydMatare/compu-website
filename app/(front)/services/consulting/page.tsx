@@ -81,6 +81,7 @@ function Consulting() {
           <GsapReveal className="mx-auto mb-14 max-w-4xl">
             <ServiceTop
               image="web.webp"
+              animation="innovation"
               title="Expert IT Consulting Services"
               description="Strategic technology advisory services that help your business make informed decisions, optimise processes and drive digital transformation."
               description2="Our consultants work closely with you to understand your business objectives and develop technology strategies that align with your goals and drive measurable results."

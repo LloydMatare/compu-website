@@ -2,6 +2,7 @@ import GsapReveal from '@/components/ui/gsap-reveal'
 import LinkButton from '@/components/link-button'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
 import React from 'react'
+import AnimatedMedia from '@/components/ui/animated-media'
 
 function Promotion() {
   return (
@@ -17,7 +18,7 @@ function Promotion() {
       <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" aria-hidden="true" />
 
       <div className="container relative mx-auto px-4 py-16 lg:py-24">
-        <GsapReveal>
+        <GsapReveal className="grid items-center gap-8 lg:grid-cols-2">
           <div className="max-w-3xl rounded-3xl border border-border/60 bg-card/40 p-7 shadow-[0_0_80px_-40px_var(--glow)] backdrop-blur-xl md:p-10 lg:p-12">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-brand">
@@ -56,6 +57,11 @@ function Promotion() {
               </LinkButton>
             </div>
           </div>
+          <AnimatedMedia
+            media="cybersecurity"
+            alt="Compulink cybersecurity solutions"
+            className="shadow-[0_0_60px_-24px_var(--glow)]"
+          />
         </GsapReveal>
       </div>
     </section>

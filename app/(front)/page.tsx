@@ -1,33 +1,32 @@
 import type { Metadata } from 'next'
-import Partners from './_components/partners'
+import { HeroCyberpunk } from './_components/hero-cyberpunk'
 import About from './_components/about'
-import Work from './_components/work'
 import Service from './_components/service'
-import Testimonials from './_components/testimonials'
+import Testimonials from './_components/testimonies'
 import HomeCarousel from './_components/carousel'
 import Promotion from './_components/promotions'
-import Hero from './_components/hero'
+import Partners from './_components/partners'
+import Work from './_components/work'
 
 export const metadata: Metadata = {
-  title: 'IT Solutions & Services in Zimbabwe | Cloud, Cybersecurity, Software',
+  title: 'Compulink | IT Solutions & Services in Zimbabwe',
   description:
-    'Compulink is Zimbabwe\'s leading IT solutions provider with 30+ years of experience. Cloud computing, cybersecurity, software development, networking, and hardware solutions.',
+    "Zimbabwe's leading IT solutions provider. Cloud computing, cybersecurity, software development, networking, hardware and technical support for over 30 years.",
   openGraph: {
     title: 'Compulink | IT Solutions & Services in Zimbabwe',
     description:
-      'Zimbabwe\'s leading IT solutions provider. Cloud computing, cybersecurity, software development, networking, and hardware for 30+ years.',
+      "Zimbabwe's leading IT solutions provider. Cloud computing, cybersecurity, software development, networking, and hardware for 30+ years.",
   },
 }
 
 export default function Home() {
   return (
     <div className="flex flex-col">
-      <Hero
+      <HeroCyberpunk
         backImage="web3.webp"
-        image=""
-        primaryButtonText="Explore Our Services"
+        primaryButtonText="INITIATE PROTOCOL"
         primaryButtonLink="/services"
-        secondaryButtonText="Speak to Sales"
+        secondaryButtonText="ESTABLISH CONNECTION"
         secondaryButtonLink="/contact"
       />
 

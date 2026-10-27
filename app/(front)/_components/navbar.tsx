@@ -8,7 +8,6 @@ import { useTheme } from 'next-themes'
 import {
   ArrowRight,
   ArrowUpRight,
-  LayoutDashboard,
   Mail,
   Menu,
   Moon,
@@ -67,7 +66,6 @@ const navItems: NavEntry[] = [
     (link) => ({ ...link })
   ),
   { name: 'Shop', href: 'https://compulink.odoo.com/shop', external: true },
-  { name: 'Dashboard', href: '/dashboard' },
 ]
 
 const emptySubscribe = () => () => {}
@@ -260,9 +258,6 @@ function Navbar() {
                             isActive(item.href) ? 'text-brand' : 'text-muted-foreground'
                           )}
                         >
-                          {item.name === 'Dashboard' && (
-                            <LayoutDashboard className="h-3.5 w-3.5" aria-hidden="true" />
-                          )}
                           {item.name}
                           {item.external && (
                             <ArrowUpRight className="h-3 w-3 opacity-70" aria-hidden="true" />

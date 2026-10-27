@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 
 import React from 'react'
 import Image from 'next/image'
+import AnimatedMedia from '@/components/ui/animated-media'
 import {
   Award,
   CircleCheck,
@@ -179,14 +180,12 @@ function About() {
             <GsapReveal distance={48} delay={0.1} className="relative">
               <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 shadow-[0_0_60px_-24px_var(--glow)]">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/images/ab.gif"
-                    alt="Compulink Systems engineering team at work"
-                    fill
-                    className="object-cover"
-                    priority
+                  <AnimatedMedia
+                    media="company"
+                    alt="Compulink Systems — evolving with technology"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 600px"
+                    className="absolute inset-0 h-full rounded-none border-0"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
                 </div>
               </div>
             </GsapReveal>

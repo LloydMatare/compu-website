@@ -24,11 +24,12 @@ function About() {
             <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 shadow-[0_0_60px_-24px_var(--glow)]">
               <div className="relative aspect-[4/3] w-full">
                 <Image
-                  src="/images/ab.gif"
-                  alt="Compulink Systems — 30 years of IT excellence"
+                  src="/images/compulink.gif"
+                  alt="Compulink Systems at work"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
-                  priority
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
               </div>

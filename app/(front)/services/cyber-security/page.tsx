@@ -65,6 +65,7 @@ function CyberSecurity() {
           <GsapReveal className="mx-auto mb-14 max-w-4xl">
             <ServiceTop
               image="cyber.webp"
+              animation="cybersecurity"
               title="Advanced Cyber Security"
               description="Comprehensive security solutions that protect organisations against cyber attacks, preventing application downtime, theft of sensitive data and reputational damage."
               description2="With over 30 years of experience helping thousands of businesses withstand cyber threats and protect valuable data, we are confident in our ability to enhance your network security posture."

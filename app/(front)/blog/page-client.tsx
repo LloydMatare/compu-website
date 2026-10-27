@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import Hero from '../_components/hero'
 import GsapReveal from '@/components/ui/gsap-reveal'
 import { cn } from '@/lib/utils'
+import AnimatedMedia from '@/components/ui/animated-media'
 
 function formatDate(timestamp: number) {
   return new Date(timestamp).toLocaleDateString('en-GB', {
@@ -144,6 +145,21 @@ export default function BlogPage() {
       />
 
       <div className="container mx-auto px-4 py-16">
+        <GsapReveal className="mb-12 grid items-center gap-6 overflow-hidden rounded-3xl border border-border/60 bg-card/50 p-5 md:grid-cols-2 md:p-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand">
+              From Compulink
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold md:text-3xl">
+              Technology moves. <span className="text-gradient-brand">Stay informed.</span>
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Explore company news, practical guides and perspectives on the technology
+              shaping your business.
+            </p>
+          </div>
+          <AnimatedMedia media="news" alt="Compulink news and technology updates" />
+        </GsapReveal>
         <GsapReveal className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-brand">
