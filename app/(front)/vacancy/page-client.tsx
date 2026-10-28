@@ -1,11 +1,12 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import type { Id } from '@/convex/_generated/dataModel'
 import { VacancyCard } from './_components/vacancyCard'
 import { VacancyModal } from './_components/vacancyModal'
+import { filterVacancies } from './_lib/search'
 import Hero from '../_components/hero'
 import { Button } from '@/components/ui/button'
 import { Briefcase, Filter, Search } from 'lucide-react'
@@ -41,7 +42,7 @@ export default function VacancyPage() {
   const docs = useQuery(api.vacancies.list, { publishedOnly: true })
   const loading = docs === undefined
 
-  const vacancies: Vacancy[] = (docs ?? []).map((vacancy) => ({
+  const vacancies = useMemo<Vacancy[]>(() => (docs ?? []).map((vacancy) => ({
     _id: vacancy._id,
     position: vacancy.position,
     status: vacancy.status,
@@ -55,7 +56,7 @@ export default function VacancyPage() {
     location: 'Zimbabwe',
     salary: 'Competitive',
     createdAt: new Date(vacancy._creationTime).toISOString(),
-  }))
+  })), [docs])
 
   // Extract unique categories from vacancies
   const categories = [
@@ -67,16 +68,11 @@ export default function VacancyPage() {
     ),
   ]
 
-  const filteredVacancies = vacancies.filter((vacancy) => {
-    const matchesSearch =
-      vacancy.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vacancy.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vacancy.skills?.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
-
-    const matchesCategory = selectedCategory === 'All' || vacancy.category === selectedCategory
-
-    return matchesSearch && matchesCategory
-  })
+  const filteredVacancies = useMemo(
+    () => filterVacancies(vacancies, searchTerm, selectedCategory),
+    [vacancies, searchTerm, selectedCategory],
+  )
+  const hasActiveFilters = searchTerm.trim().length > 0 || selectedCategory !== 'All'
 
   useLayoutEffect(() => {
     const container = vacancyGridRef.current
@@ -92,10 +88,10 @@ export default function VacancyPage() {
         {
           y: 0,
           autoAlpha: 1,
-          duration: 0.9,
+          duration: hasActiveFilters ? 0.2 : 0.9,
           ease: 'power3.out',
           stagger: 0.08,
-          scrollTrigger: {
+          scrollTrigger: hasActiveFilters ? undefined : {
             trigger: container,
             start: 'top 85%',
           },
@@ -104,7 +100,7 @@ export default function VacancyPage() {
     })
 
     return () => ctx.revert()
-  }, [filteredVacancies])
+  }, [filteredVacancies, hasActiveFilters])
 
   if (loading) {
     return (
@@ -162,16 +158,18 @@ export default function VacancyPage() {
           delay={0.2}
           className="mb-12"
         >
-          <div className="bg-white rounded-2xl p-6 shadow-lg border">
+          <div className="bg-blue-50 rounded-2xl p-6 shadow-lg border border-blue-100">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Search Input */}
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search positions, skills..."
+                  type="search"
+                  aria-label="Search vacancies"
+                  placeholder="Search positions, qualifications, departments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-blue-100/50 border-blue-200 text-slate-900 placeholder:text-slate-500 focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
                 />
               </div>
 
@@ -194,7 +192,7 @@ export default function VacancyPage() {
               </div>
 
               {/* Results Count */}
-              <div className="text-sm text-gray-600 flex items-center justify-end">
+              <div aria-live="polite" role="status" className="text-sm text-gray-600 flex items-center justify-end">
                 {filteredVacancies.length} position(s) found
                 {searchTerm && (
                   <Button
@@ -238,11 +236,10 @@ export default function VacancyPage() {
           </GsapReveal>
         ) : (
           <div ref={vacancyGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredVacancies.map((vacancy, index) => (
+            {filteredVacancies.map((vacancy) => (
               <div
                 key={vacancy._id}
                 data-reveal
-                style={{ opacity: 0 }}
               >
                 <VacancyCard vacancy={vacancy} onClick={() => setSelectedVacancy(vacancy)} />
               </div>
