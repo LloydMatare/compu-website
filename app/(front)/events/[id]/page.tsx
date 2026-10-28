@@ -9,8 +9,6 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Users,
-  Ticket,
   Share2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -55,11 +53,9 @@ export default async function EventDetailPage({
 
   if (!event) notFound()
 
-  const relatedEvents = allEvents
-    .filter((e) => e.id !== event.id)
-    .slice(0, 3)
+  const relatedEvents = allEvents.filter((e) => e.id !== event.id).slice(0, 3)
 
-  const isRegistrationOpen = event.link && event.isActive !== false
+  const isRegistrationOpen = !!event.link && event.published === true
 
   return (
     <div className="pb-16">
@@ -112,74 +108,8 @@ export default async function EventDetailPage({
                   {event.description ||
                     'More details about this event will be shared soon.'}
                 </p>
-
-                {event.longDescription ? (
-                  <div className="mt-6 whitespace-pre-line text-muted-foreground">
-                    {event.longDescription}
-                  </div>
-                ) : null}
               </div>
             </GsapReveal>
-
-            {/* Agenda */}
-            {event.agenda?.length ? (
-              <GsapReveal className="mt-12">
-                <h2 className="mb-6 text-xl font-semibold md:text-2xl">
-                  Agenda
-                </h2>
-                <div className="space-y-4 border-l-2 border-brand/30 pl-6">
-                  {event.agenda.map((item, i) => (
-                    <div key={i} className="relative">
-                      <span className="absolute -left-[31px] top-1.5 h-3 w-3 rounded-full bg-brand ring-4 ring-background" />
-                      <p className="text-sm font-semibold text-brand">
-                        {item.time}
-                      </p>
-                      <p className="font-medium">{item.title}</p>
-                      {item.description ? (
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {item.description}
-                        </p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              </GsapReveal>
-            ) : null}
-
-            {/* Speakers */}
-            {event.speakers?.length ? (
-              <GsapReveal className="mt-12">
-                <h2 className="mb-6 text-xl font-semibold md:text-2xl">
-                  Speakers
-                </h2>
-                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
-                  {event.speakers.map((speaker, i) => (
-                    <div key={i} className="text-center">
-                      <div className="relative mx-auto mb-3 h-24 w-24 overflow-hidden rounded-full bg-muted">
-                        {speaker.imageUrl ? (
-                          <Image
-                            src={speaker.imageUrl}
-                            alt={speaker.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-brand">
-                            {speaker.name?.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-sm font-semibold">{speaker.name}</p>
-                      {speaker.role ? (
-                        <p className="text-xs text-muted-foreground">
-                          {speaker.role}
-                        </p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              </GsapReveal>
-            ) : null}
           </div>
 
           {/* Sidebar - details + registration */}
@@ -215,28 +145,6 @@ export default async function EventDetailPage({
                       </div>
                     </li>
                   ) : null}
-                  {event.capacity ? (
-                    <li className="flex items-start gap-3">
-                      <Users className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                      <div>
-                        <p className="font-medium">Capacity</p>
-                        <p className="text-muted-foreground">
-                          {event.capacity} seats
-                        </p>
-                      </div>
-                    </li>
-                  ) : null}
-                  {event.price != null ? (
-                    <li className="flex items-start gap-3">
-                      <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                      <div>
-                        <p className="font-medium">Price</p>
-                        <p className="text-muted-foreground">
-                          {event.price === 0 ? 'Free' : `$${event.price}`}
-                        </p>
-                      </div>
-                    </li>
-                  ) : null}
                 </ul>
               </div>
 
@@ -254,7 +162,10 @@ export default async function EventDetailPage({
                 </p>
 
                 {isRegistrationOpen ? (
-                  <Button asChild className="mt-5 w-full bg-brand text-brand-foreground hover:bg-brand/90">
+                  <Button
+                    asChild
+                    className="mt-5 w-full bg-brand text-brand-foreground hover:bg-brand/90"
+                  >
                     <Link
                       href={event.link!}
                       target="_blank"
