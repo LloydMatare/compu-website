@@ -41,9 +41,9 @@ async function EventCards() {
           </div>
 
           <div className="flex flex-1 flex-col p-6">
-            <h3 className="mb-3 text-lg font-semibold leading-snug transition-colors group-hover:text-brand">
+            <Link href={`events/${event.id}`} className="mb-3 text-lg font-semibold leading-snug transition-colors group-hover:text-brand">
               {event.title}
-            </h3>
+            </Link>
             <p className="mb-5 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
               {event.description}
             </p>

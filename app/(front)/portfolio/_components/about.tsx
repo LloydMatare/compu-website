@@ -24,7 +24,7 @@ function About() {
             <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 shadow-[0_0_60px_-24px_var(--glow)]">
               <div className="relative aspect-[4/3] w-full">
                 <Image
-                  src="/images/compulink.gif"
+                  src="/images/compu.gif"
                   alt="Compulink Systems at work"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
